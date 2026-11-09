@@ -1,13 +1,15 @@
 # Server settings for the bunnyhop cap
 
-**Idea:** two server cvars, so each server decides how bunnyhopping works:
+**Idea:** two server cvars, so each server decides how bunnyhopping works (Fortress United has the same
+pair):
 
-| Cvar | Default | Meaning |
+| Cvar | Values | Default |
 |---|---|---|
-| `sv_bhop_cap` | `1` | `0` turns the bunnyhop speed cap off entirely |
-| `sv_bhop_cap_speed` | `1.7` | where the cap starts, as a multiple of the class's max speed (today fixed at 1.7) |
+| `bunnyhop_mode` | `0` standard: today's cap, at 1.7 × the class's max speed<br>`1` capped at a set amount: the cap starts at `bunnyhop_limit` instead<br>`2` uncapped: no bunnyhop cap at all | `0` |
+| `bunnyhop_limit` | where the cap starts in mode 1, as a multiple of the class's max speed (so it scales per class like today's) | `1.7` |
 
-The defaults keep today's behaviour exactly.
+With the defaults nothing changes. Example: `bunnyhop_mode 1` with `bunnyhop_limit 2.2` lets a scout (max
+400 u/s) hop up to 880 u/s before the cap catches them, instead of 680.
 
 ## How the cap works today
 
@@ -24,8 +26,9 @@ fraction = ( maxscaledspeed / spd ) * 0.65;      // cut to 65% of the cap
 VectorScale( pmove->velocity, fraction, pmove->velocity );
 ```
 
-Jump while faster than 1.7 × your class's max speed and your speed drops to 0.65 × that limit (1.1 × max
-speed). For a scout (max 400 u/s) the cap is 680 u/s and you land back at 442 u/s.
+Jump while faster than 1.7 × your class's max speed and your speed drops to 0.65 × that limit. For a scout
+the cap is 680 u/s and you land back at 442 u/s. Mode 1 keeps this exact behaviour but at the server's
+limit; mode 2 skips it.
 
 ## The important part: it must reach the client too
 
@@ -33,40 +36,40 @@ speed). For a scout (max 400 u/s) the cap is 680 u/s and you land back at 442 u/
 the client keep applying the old cap while the server doesn't (or the reverse): every capped jump would be
 predicted wrong and corrected a round trip later, a visible hitch each hop.
 
-So the setting has to travel to clients the way TFC already sends other movement switches: through
-**physinfo**, the per-player key string the server sends with every update and both sides' `pm_shared` read
-(`slj` for the long jump, `tfc` for TFC rules already work this way). The server copies the cvars into the
-player's physinfo:
+So the setting travels to clients the way TFC already sends other movement switches: through **physinfo**,
+the per-player key string the server sends with every update and both sides' `pm_shared` read (`slj` for the
+long jump and `tfc` for TFC rules already work this way). The server turns the two cvars into one number, the
+cap factor, and puts it in each player's physinfo:
 
 ```cpp
-// server, when the cvars change and when a player spawns
-g_engfuncs.pfnSetPhysicsKeyValue( edict(), "bhc", "0" );     // cap off
-g_engfuncs.pfnSetPhysicsKeyValue( edict(), "bhs", "1.7" );   // cap factor
+// server, at spawn and whenever bunnyhop_mode or bunnyhop_limit change
+float factor = mode == 2 ? 0.0f : mode == 1 ? limit : 1.7f;   // 0 = uncapped
+char buf[16];
+snprintf( buf, sizeof( buf ), "%g", factor );
+g_engfuncs.pfnSetPhysicsKeyValue( edict(), "bhf", buf );
 ```
 
-and `pm_shared` reads them instead of the constant:
+and `pm_shared` reads it instead of the constant:
 
 ```c
 void PM_PreventMegaBunnyJumping( void )
 {
-	const char *cap = pmove->PM_Info_ValueForKey( pmove->physinfo, "bhc" );
-	const char *fac = pmove->PM_Info_ValueForKey( pmove->physinfo, "bhs" );
-	float factor = fac[0] ? atof( fac ) : BUNNYJUMP_MAX_SPEED_FACTOR;
+	const char *bhf = pmove->PM_Info_ValueForKey( pmove->physinfo, "bhf" );
+	float factor = bhf[0] ? atof( bhf ) : BUNNYJUMP_MAX_SPEED_FACTOR;   // no key: as today
 
-	if ( cap[0] && atoi( cap ) == 0 )
-		return;                                   // server turned the cap off
-	...
+	if ( factor <= 0.0f )
+		return;                                   // bunnyhop_mode 2: uncapped
 	maxscaledspeed = factor * pmove->maxspeed;
-	...
+	...                                           // the rest unchanged
 }
 ```
 
-Missing keys mean "as today", so an updated client on an old server, or an old client on a server that
-leaves the defaults, behaves exactly as now. Only servers that change the cvars need players on the updated
-client.
+A missing key means "as today", so an updated client on an old server, or an old client on a server left at
+mode 0, behaves exactly as now. Only servers that use modes 1 or 2 need players on the updated client.
 
 ## Why
 
-Bunnyhopping is a core TFC movement skill, and communities disagree about the cap: some want classic
-capped hops, some want it off for movement or practice servers. Today the only way to change it is a modified
-game library, which also breaks prediction. Two cvars make it a server choice with smooth prediction either way.
+Bunnyhopping is a core TFC movement skill, and communities disagree about the cap: some want the classic
+cap, some a looser one, some none at all for movement or practice servers. Today the only way to change it is
+a modified game library, which also breaks prediction. Two cvars make it a server choice with smooth
+prediction in every mode.

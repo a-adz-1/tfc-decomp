@@ -6,7 +6,7 @@ are elsewhere: `fixes/` and `server/tfc.so-2026-patched-25th-anniversary/`.
 
 | Idea | Status |
 |---|---|
-| [Server settings for the bunnyhop cap](bunnyhop-cap.md): `sv_bhop_cap` (off switch) and `sv_bhop_cap_speed` | written up |
+| [Server settings for the bunnyhop cap](bunnyhop-cap.md): `bunnyhop_mode` (0 standard, 1 set limit, 2 uncapped) and `bunnyhop_limit` | written up |
 | Counter-Strike 1.6-style crosshair options in the TFC client | to write up |
 | Air-strafe speed that doesn't depend on frame rate | to write up |
 | Wall sticking | to write up |
