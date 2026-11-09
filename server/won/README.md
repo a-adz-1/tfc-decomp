@@ -1,5 +1,13 @@
-# WON-era servers (not decompiled yet)
+# WON-era servers (1999–2003)
 
-Original WON (pre-Steam, 1999–2004) Linux dedicated server builds are held locally for comparison but have
-not been decompiled: `hlds_l` 1.0.0.9 (with its TFC game files), 3.1.0.1, 3.1.0.7 and 3.1.1.1 (the last WON
-release). They are not in this repository.
+Decompiles of the original WON (pre-Steam) TFC server game libraries, from archive.org's Linux dedicated
+server packages (Linux builds with symbols). Findings: `docs/won-comparison.md`.
+
+| Folder | Release |
+|---|---|
+| `tfc_i386.so-1.0.0.9-1999/` | HLDS 1.0.0.9 (1999) |
+| `tfc_i386.so-3.1.0.1-2000/` | HLDS 3.1.0.1 (2000, Half-Life 1.1 / TFC 1.5), coming |
+| `tfc_i386.so-3.1.0.7-2002/` | HLDS 3.1.0.7 (2002), coming |
+| `tfc_i386.so-3.1.1.1-2003/` | HLDS 3.1.1.1 (2003, last WON release), coming |
+
+The engines from the same packages are in `engine/won/`.

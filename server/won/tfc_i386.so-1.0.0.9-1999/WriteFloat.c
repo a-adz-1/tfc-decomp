@@ -1,0 +1,9 @@
+// WriteFloat__5CSavePCcPCfi  @ 00119060
+void WriteFloat__5CSavePCcPCfi(undefined4 param_1,undefined4 param_2,undefined4 param_3,int param_4)
+
+{
+  BufferField__5CSavePCciT1(param_1,param_2,param_4 * 4,param_3);
+  return;
+}
+
+
