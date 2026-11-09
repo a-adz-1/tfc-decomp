@@ -10,7 +10,6 @@ the code works today, and how it could be done, with an honest rating of how goo
 | ✅ **Proven** | Built, measured, and running on the OfficialTFC testing server. |
 | 🟢 **Clean fix** | Root cause clear, small source change, client and server stay in agreement. Not built yet. |
 | 🟡 **Viable, with a trade-off** | Works, but changes how the game plays or needs the engine, so it needs agreement or Valve. |
-| 🟠 **Workaround only** | A server-side patch the client doesn't know about: it helps but mispredicts and hitches. Not a real fix. |
 | ❓ **Needs a repro** | We couldn't make it happen yet, so no fix is proposed with confidence. |
 
 "Client and server" means the change is in code both run (movement, weapons), so both must get it or the
@@ -22,7 +21,6 @@ client mispredicts. "Server-only" changes can't cause that.
 |---|---|---|
 | Push fields (`trigger_push`, crates) back to pre-25th | ✅ proven | server only · [`fixes/push-fields`](../fixes/push-fields) |
 | Ramp dead stop, fixed in `pm_shared` on both sides | ✅ proven | client and server · [`server/tfc.so-2026-patched-25th-anniversary`](../server/tfc.so-2026-patched-25th-anniversary) |
-| Ramp dead stop, server plugin only (OTFC Movement Fixes) | 🟠 workaround | server only: the client still predicts the stop, so a save shows as a hitch |
 | Full-precision prediction (`delta.lst`) | ✅ proven | server config only · [officialtfc.win/delta-precision](https://officialtfc.win/delta-precision) |
 | [Soldier quick fire and demoman quick det](quick-fire-and-quick-det.md): the fire-delay "creep" | 🟢 clean fix | client and server · one line |
 | [Demoman det: reloading blocks it](demoman-det.md) | 🟢 easy | server only · could even be a plugin |
