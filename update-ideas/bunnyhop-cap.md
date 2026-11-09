@@ -1,5 +1,8 @@
 # Server settings for the bunnyhop cap
 
+**Rating: 🟢 clean fix.** Small change, and the setting reaches the client through physinfo so prediction stays
+right in every mode. Client and server both need it; with the defaults nothing changes, so old clients are fine.
+
 **Idea:** two server cvars, so each server decides how bunnyhopping works (Fortress United has the same
 pair):
 
