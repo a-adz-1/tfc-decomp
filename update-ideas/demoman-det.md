@@ -36,12 +36,18 @@ Give the rule its own clock instead of borrowing a weapon timer. As built, it re
 so nothing new needs storing:
 
 ```cpp
-// CTFPipebombLauncher::PrimaryAttack, when a pipe is fired
-m_pPlayer->m_flLastPipebombFired = gpGlobals->time;
+// No det within 0.6 s of firing a pipe: true when none of your pipes is younger than 0.6 s
+BOOL CBasePlayer::PipebombsCanDet( void )
+{
+	for ( CBaseEntity *pEnt = UTIL_FindEntityByClassname( NULL, "tf_gl_pipebomb" ); pEnt; pEnt = UTIL_FindEntityByClassname( pEnt, "tf_gl_pipebomb" ) )
+		if ( CBaseEntity::Instance( pEnt->pev->owner ) == this && ((CTFGrenade *)pEnt)->m_flCreationTime + 0.6 > gpGlobals->time )
+			return FALSE;
+	return TRUE;
+}
 
 // detpipe and the demoman impulse
-if ( gpGlobals->time >= m_flLastPipebombFired + 0.6 )
-	ExplodeOldPipebomb( TRUE, FALSE );
+if ( pPlayer->PipebombsCanDet() )
+	pPlayer->ExplodeOldPipebomb( TRUE, FALSE );
 ```
 
 Same rule as intended (no det within 0.6 s of firing a pipe; each pipe still arms for 0.6 s), but reloading,
