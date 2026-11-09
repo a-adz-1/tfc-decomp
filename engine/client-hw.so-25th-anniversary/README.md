@@ -5,7 +5,7 @@ The hardware-rendering client engine since the 25th update. Not game code: predi
 - **Binary:** `hw.so`
 - **Version:** 25th Anniversary update (October 2024 build decompiled)
 - **Built by Valve with:** GCC 5.4.1, Steam Runtime scout
-- **MD5 of the original:** `cb9d363dc978`
+- **MD5 of the original:** `cb9d363dc978bbc92e9a49edd3616d11`
 - **Contents:** Ghidra decompile, one file per source file where the symbols allowed it (the binaries keep function symbols).
 
 The original binary is not included.

@@ -5,7 +5,7 @@ The HLDS engine since the 25th update: sys_ticrate, pingboost sleeps, update sch
 - **Binary:** `engine_i486.so`
 - **Version:** 25th Anniversary update
 - **Built by Valve with:** GCC 5.4.1, Steam Runtime scout
-- **MD5 of the original:** `6e948c23fdfd`
+- **MD5 of the original:** `6e948c23fdfd3445246586a984f8e71f`
 - **Contents:** Ghidra decompile, one file per source file where the symbols allowed it (the binaries keep function symbols).
 
 The original binary is not included.

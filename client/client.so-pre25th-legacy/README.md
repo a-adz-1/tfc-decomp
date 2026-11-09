@@ -5,7 +5,7 @@ The TFC client library from before the 25th Anniversary Update (Steam's `legacy`
 - **Binary:** `client.so`
 - **Version:** pre-25th-anniversary Steam build
 - **Built by Valve with:** GCC 4.6.1
-- **MD5 of the original:** `0ca38afe967e`
+- **MD5 of the original:** `0ca38afe967e233f1237518355740342`
 - **Contents:** Ghidra decompile, one file per source file where the symbols allowed it (the binaries keep function symbols).
 
 The original binary is not included.
