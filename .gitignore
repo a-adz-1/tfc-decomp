@@ -1,0 +1,7 @@
+bin/
+ref/
+ghidra/*.gpr
+ghidra/*.rep/
+ghidra/*.lock*
+out/
+build/

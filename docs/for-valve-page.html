@@ -1,0 +1,120 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv h2 .num::after { content: "."; }
+  .inv pre { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1rem 1.2rem; overflow: auto; font-size: 0.85rem; line-height: 1.5; color: #e8eaf0; }
+  .inv pre code { background: none; border: 0; padding: 0; color: inherit; font-size: inherit; }
+  .inv .ask { background: #ffffff08; border: 1px solid #ff9d3d66; border-radius: 14px; padding: 1rem 1.4rem; margin: 1.2rem 0; }
+  .inv .ask ol { margin: 0.4rem 0 0; padding-left: 1.3rem; }
+  .inv .intro { background: #ffffff0a; border-left: 3px solid #ff9d3d; border-radius: 0 14px 14px 0; padding: 0.9rem 1.3rem; margin: 1.4rem 0 0; }
+  .inv ol li, .inv ul li { margin: 0.35rem 0; }
+  .inv a { color: #ffd2a6; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC &middot; for Valve</span>
+    <h1>Team Fortress Classic: three small fixes</h1>
+    <p class="sub">A short brief from the TFC community on what the 25th Anniversary server build broke, what it costs the game today, and the three contained changes that would let TFC servers move to the 25th Anniversary server build, so players' 25th clients and the servers run the same code again.</p>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="#push">The push bug &rarr;</a>
+      <a class="btn btn-ghost" href="#ramp">The ramp bug &rarr;</a>
+      <a class="btn btn-ghost" href="#offer">What we offer &rarr;</a>
+    </div>
+  </div>
+  <div class="inv">
+    <!--INTRO-->
+
+    <h2 id="summary"><span class="num">1</span>In one minute</h2>
+    <p class="lead">TFC is still played every day: public servers, nightly pickups, leagues. The 25th Anniversary Update was appreciated: it gave us a client that runs well on modern machines. One change in the 25th <em>server</em> build has split the game in two.</p>
+    <div class="ask">
+      <strong>The ask: three contained changes in the TFC game code, all measured on a real TFC server.</strong>
+      <ol>
+        <li><code>trigger_push</code>: restore the frame-time-independent push (the diff is already on your tracker).</li>
+        <li><code>func_pushable</code>: the same frame-time scaling was added there; restore the original behaviour.</li>
+        <li>The "ramp bug" dead stop at high frame rates in <code>pm_shared.c</code>: a nine-line fix, verified bit-for-bit against the original movement everywhere else.</li>
+      </ol>
+    </div>
+    <p>Players already run the 25th client. One update with these would let servers follow, which also removes a movement problem every 25th player has today (section 3).</p>
+
+    <h2 id="push"><span class="num">2</span>The push bug</h2>
+    <p>In the 25th Anniversary <code>tfc.so</code>, push fields scale by the server's frame time. At a normal server rate a gentle shove becomes a rocket booster; players are fired into ceilings or skip the map's intended path. Dozens of classic maps built around push fields are unplayable on a 25th server.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Entity</th><th>Pre-25th server</th><th>25th Anniversary server</th></tr>
+      <tr><td><code>trigger_push</code> (push fields without "Push Once")</td><td>Push = speed &times; direction, fixed</td><td>Push = speed &times; direction <strong>&divide; server frame time</strong>, so it depends on the server's frame rate</td></tr>
+      <tr><td><code>func_pushable</code> (crates)</td><td>Your velocity &times; a fixed factor</td><td>Factor &times; <code>sv_pushable_fixed_tick_fudge</code> &times; frame time (new cvar)</td></tr>
+    </table></div></div>
+    <p>Reported and labelled <em>Team Fortress Classic</em> on your tracker, with the changed lines posted by a community member:</p>
+    <ul>
+      <li><a href="https://github.com/ValveSoftware/halflife/issues/3651">#3651 trigger_pushes are way too strong</a> (December 2023)</li>
+      <li><a href="https://github.com/ValveSoftware/halflife/issues/3780">#3780 trigger_push scales inversely with frametime</a> (May 2024)</li>
+    </ul>
+    <p><strong>Fix:</strong> restore the pre-25th behaviour for both entities in the TFC build (and DMC/Ricochet, which took the same change). Half-Life itself did not, which is why the bug is invisible there.</p>
+    <p><strong>Measured</strong> on a real dedicated server, siege's push shaft (a 1500 u/s lift, then a 750 u/s push along the corridor), a scout dropped in with no keys held:</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Server build</th><th>Server tick</th><th>Rise after 0.25 s</th><th>Top of the lift</th><th>Peak vertical speed</th></tr>
+      <tr><td>Pre-25th</td><td>1000</td><td>20 units</td><td>124, reached at 0.95 s</td><td>503 u/s</td></tr>
+      <tr><td>Pre-25th push code in a fresh build</td><td>1000</td><td>20 units</td><td>124 at 0.95 s (identical frame for frame)</td><td>503 u/s</td></tr>
+      <tr><td>25th Anniversary</td><td>1000</td><td><strong>603 units</strong></td><td><strong>ceiling (460) at 0.12 s</strong></td><td><strong>1996 u/s, the engine's velocity cap</strong></td></tr>
+      <tr><td>25th Anniversary</td><td>100</td><td><strong>479 units</strong></td><td><strong>ceiling at 0.34 s</strong></td><td><strong>1996 u/s</strong></td></tr>
+    </table></div></div>
+    <p>It is broken at any server rate, not only at high ones; only the velocity cap keeps it finite.</p>
+
+    <h2 id="legacy"><span class="num">3</span>What it costs beyond push maps</h2>
+    <p>Because of the push bug, almost every TFC community runs the pre-25th server. That has a second cost that only shows up when you measure it:</p>
+    <ul>
+      <li>The 25th client and the pre-25th server were built with different compilers. The movement code is the same, but its floating-point results differ in the last digits.</li>
+      <li>Movement is predicted on the client and checked on the server, so a 25th client on a legacy server is a little wrong every frame and is corrected by every server update. Ramps, slides and landings feel subtly off everywhere, not just on push maps.</li>
+      <li>We confirmed this with a movement harness that runs scripted scenarios through each game build: the two builds agree with themselves to the bit and disagree with each other. Our server plugin now works around it by running each player's move with the build their client predicts with; to get there we had to compile the movement with your own toolchain (GCC 5 in the Steam Runtime "scout" image).</li>
+    </ul>
+    <p>Fixing the push bug makes this go away on its own: communities move to the 25th server and client and server agree again. Details of the measurement: <a href="/investigation/fixing-movement">Fixing movement</a>.</p>
+
+    <h2 id="ramp"><span class="num">4</span>The ramp bug</h2>
+    <p>Sliding along a slope at speed, the player sometimes stops dead a few units onto it. Not every time: the same jump works nine times and fails the tenth, which makes it worse, since you can never trust a ramp. It happens far more at high frame rates and has been called the "ramp bug" for as long as people have played. The cause is in <code>PM_FlyMove</code>: at tiny frame times the player trace reports the slope the player is already on again, at zero distance, and the code treats the repeat as a second plane. Either exit from there is a zeroed velocity.</p>
+    <p>The fix is nine lines before the plane is added: if it's (nearly) a plane already hit this move, don't add it; nudge the velocity off the slope and carry on. It has to be in both the client and the server to be seamless, which is why we're asking for it in <code>pm_shared.c</code> rather than keeping it server-side.</p>
+    <ul>
+      <li>Full report with reproduction, measurements and the patch: <a href="/git_hub_ramp_fix_issue">Ramp bug report</a> (GitHub issue: <em>link once posted</em>)</li>
+      <li>Verified: every other movement scenario in our harness is bit-identical with and without the change; only the dead-stop scenarios differ, and there the player keeps sliding. Running on our public servers.</li>
+    </ul>
+
+    <h2 id="offer"><span class="num">5</span>What we offer</h2>
+    <ul>
+      <li>Measurements and the movement test harness for all three changes.</li>
+      <li>Patches in whatever form is useful: against the public SDK, or as described on the tracker.</li>
+      <li>Two public servers (US and EU) and a community that can test any build within hours and report back properly. We already run these fixes live, so we know what to look for.</li>
+    </ul>
+    <p>The community also keeps a list of things it would love to see added or fixed, which we can document properly if there's appetite: Counter-Strike 1.6-style crosshair options in the TFC client (largely a copy of what CS already has), frame-rate-dependent air strafing and command execution, wall sticking, a few class-specific fire and reload quirks, and the engine's default network precision. These three are the ones that split the community, so we're keeping the ask to them.</p>
+    <p>We'd be glad to work with whoever looks after Half-Life's games now, at whatever pace suits. The fixes we run today, with downloads and source, are on our <a href="/fixes">server fixes</a> page; the long write-up is <a href="/investigation">the investigation</a>.</p>
+    <p>It would be amazing to finally see a few of TFC's old kinks fixed in the game itself, after all these years. The community that still plays it every night would notice straight away, and would be genuinely grateful.</p>
+  </div>
+</div>

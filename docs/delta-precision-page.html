@@ -1,0 +1,102 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv h2 .num::after { content: "."; }
+  .inv pre { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1rem 1.2rem; overflow: auto; font-size: 0.85rem; line-height: 1.5; color: #e8eaf0; }
+  .inv pre code { background: none; border: 0; padding: 0; color: inherit; font-size: inherit; }
+  .inv ol li, .inv ul li { margin: 0.35rem 0; }
+  .inv a { color: #ffd2a6; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC &middot; server setting</span>
+    <h1>Full-precision prediction</h1>
+    <p class="sub">Why the OTFC servers send your own position and speed at full precision, what the change is, and how to make it on your server. It takes six lines in one file and no client change.</p>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="#why">Why &rarr;</a>
+      <a class="btn btn-ghost" href="#apply">Apply it &rarr;</a>
+      <a class="btn btn-ghost" href="/fixes">Server fixes &rarr;</a>
+    </div>
+  </div>
+  <div class="inv">
+    <h2 id="what"><span class="num">1</span>The change</h2>
+    <p class="lead">In <code>tfc/delta.lst</code>, the <code>clientdata_t</code> block (the player's own state, sent only to that player), six fields now go out as full 32-bit values instead of rounded ones.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Field</th><th>Valve's default</th><th>Step</th><th>Now</th><th>Step</th></tr>
+      <tr><td><code>origin[0..2]</code> (your position)</td><td>21 bits &times; 128</td><td>1/128 unit (0.0078)</td><td>32 bits &times; 65536</td><td>1/65536 unit (0.000015)</td></tr>
+      <tr><td><code>velocity[0..2]</code> (your speed)</td><td>16 bits &times; 8</td><td>1/8 u/s (0.125)</td><td>32 bits &times; 65536</td><td>1/65536 u/s</td></tr>
+    </table></div></div>
+    <p>Everything else in the file is untouched, in particular the <code>entity_state</code> blocks that describe <em>other</em> players to you; those are drawn interpolated and don't feed your prediction.</p>
+
+    <h2 id="how"><span class="num">2</span>What delta.lst is</h2>
+    <p>GoldSrc doesn't send raw floats. For every field the server multiplies the value by a factor, rounds it, and sends that many bits; the client divides it back. <code>delta.lst</code> is the table that says how, and the server sends the table to each client when it connects, so <strong>the client needs no change</strong>: the pre-25th and the 25th Anniversary clients both read whatever the server declares, up to 32 bits a field.</p>
+    <p>Valve's defaults date from modem days. A 21-bit position with a step of 1/128 unit and a 16-bit speed with a step of 1/8 u/s were a good trade then. On a modern connection the extra bits cost nothing you can measure.</p>
+
+    <h2 id="why"><span class="num">3</span>Why it matters</h2>
+    <p>Your game predicts your own movement: every frame it runs the movement code itself, so you don't wait a round trip to see yourself move. When a server update arrives, the game throws away its guess from that point on, takes the server's position and speed as the truth, and re-runs the frames since. If the server's truth matches what the game predicted, nothing visible happens. If it doesn't, you get a correction.</p>
+    <p>With rounded fields the server's truth is never quite what the game predicted, even when both ran the same code on the same inputs: the server's own value had fractions the rounding threw away. Your speed comes back a multiple of 0.125 u/s, your position a multiple of 1/128 unit. So the game restarts from a slightly wrong state every update, up to 102 times a second, predicts from there, and gets nudged again next time. Each nudge is tiny. The sum is a faint, constant jitter that is worst exactly where speeds have fractional parts: ramps and slides, air strafing, landing from conc jumps. Players describe it as the game feeling "floaty" or "not quite crisp" without being able to say why.</p>
+    <p>Sending the fields exactly removes that layer entirely. After this change, the only reason left for a correction is that the client and the server actually computed something different.</p>
+    <p><strong>How we found it.</strong> Raising the precision was meant to tidy up the last of the choppiness after the netcode work. It did more than that: with the rounding gone, a second, smaller mismatch became visible for the first time, the one between the 25th Anniversary client's maths and the pre-25th server's (different compilers, last-digit float differences). That led to OTFC Movement Fixes 0.4, which moves each player with the build their client predicts with. The rounding had been hiding it all along.</p>
+
+    <h2 id="ramps"><span class="num">4</span>Does it fix ramps on its own?</h2>
+    <p>No, and the ramp fix doesn't need it either. They remove different things, and smooth ramps need all three layers:</p>
+    <ol>
+      <li><strong>The same movement code on both sides</strong>, so the game's prediction and the server agree: Movement Fixes 0.4's per-client matching today; a patched client against a patched server tomorrow.</li>
+      <li><strong>Exact reporting</strong> (this page), so the agreement isn't rounded away in transit.</li>
+      <li><strong>The ramp fix</strong>, so neither side stops you dead on a slope in the first place.</li>
+    </ol>
+    <p>With 1 and 3 but not 2, slides still carry a faint jitter from the rounding. With 2 but not 1, you get crisp corrections instead of fuzzy ones. With 2 and 3 but the fix only on the server, a catch still shows the ping-sized hitch, because the client predicted a stop.</p>
+
+    <h2 id="cost"><span class="num">5</span>Cost</h2>
+    <p>At most 81 extra bits, about ten bytes, per update to a player, and only for fields that changed (updates are delta-compressed). At 100 updates a second that is under a kilobyte a second per player, against a typical rate of 20&ndash;100 KB/s. The range is unchanged in practice: 32 bits at &times;65536 covers &plusmn;32768 units and u/s, more than any map coordinate or any speed the engine allows.</p>
+
+    <h2 id="apply"><span class="num">6</span>Apply it on your server</h2>
+    <p>Edit <code>tfc/delta.lst</code>. In the <code>clientdata_t</code> block near the top, replace the six <code>origin</code> and <code>velocity</code> lines so they read:</p>
+<pre><code>clientdata_t none
+{
+	DEFINE_DELTA( flTimeStepSound, DT_INTEGER, 10, 1.0 ),
+	DEFINE_DELTA( origin[0], DT_SIGNED | DT_FLOAT, 32, 65536.0 ),
+	DEFINE_DELTA( origin[1], DT_SIGNED | DT_FLOAT, 32, 65536.0 ),
+	DEFINE_DELTA( velocity[0], DT_SIGNED | DT_FLOAT, 32, 65536.0 ),
+	DEFINE_DELTA( velocity[1], DT_SIGNED | DT_FLOAT, 32, 65536.0 ),
+
+	DEFINE_DELTA( m_flNextAttack, DT_FLOAT | DT_SIGNED, 22, 1000.0 ),
+
+	DEFINE_DELTA( origin[2], DT_SIGNED | DT_FLOAT, 32, 65536.0 ),
+	DEFINE_DELTA( velocity[2], DT_SIGNED | DT_FLOAT, 32, 65536.0 ),
+	...
+</code></pre>
+    <p>(The originals are <code>21, 128.0</code> for origin and <code>16, 8.0</code> for velocity.) Keep a copy of the old file. The server reads <code>delta.lst</code> once at start, so restart it; a map change isn't enough. Works on the Valve server and on ReHLDS, with pre-25th and 25th clients alike. It is live on all OTFC servers.</p>
+  </div>
+</div>

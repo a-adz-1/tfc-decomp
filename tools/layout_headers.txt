@@ -1,0 +1,1 @@
+extdll.h util.h cbase.h monsters.h player.h weapons.h gamerules.h teamplay_gamerules.h items.h effects.h func_break.h doors.h trains.h saverestore.h soundent.h nodes.h talkmonster.h squadmonster.h scripted.h basemonster.h decals.h explode.h plane.h spectator.h tf_defs.h tf_gamerules.h tf_wpn_grenades.h areadef.h

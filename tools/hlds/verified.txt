@@ -1,0 +1,5 @@
+# Real-engine checks of our tfc.so (tools/hlds). One line per check that
+# passed: <weight> <description>. status.py sums the weights (max 100).
+40 18 stock maps load, run and change level like the original (log 72)
+30 10 foxbot bots play 2fort well dustbowl badlands rock2 avanti cz2 for 2 min each: no crash or error, frags scored, same as the original (log 73)
+30 a real player (BoM) joined our server on 2fort with 10 bots, using our client.so, played and left normally (log 76)

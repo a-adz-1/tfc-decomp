@@ -1,0 +1,343 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC investigation</span>
+    <h1>Why TFC feels janky</h1>
+    <p class="sub">What we found about netcode, sentry guns and ramp slides, what the 25th Anniversary update changed, and what we are doing about it. November 2026.</p>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="/">&larr; Back to OfficialTFC</a>
+      <a class="btn btn-ghost" href="/investigation/qa">Questions &amp; answers &rarr;</a>
+      <a class="btn btn-ghost" href="/investigation/choppiness">Why it looks choppy &rarr;</a>
+      <a class="btn btn-ghost" href="/investigation/fixing-movement">Fixing movement &rarr;</a>
+      <a class="btn btn-ghost" href="/fixes">Server fixes &amp; downloads &rarr;</a>
+    </div>
+  </div>
+
+  <div class="inv">
+    <div class="toc">
+      <ol>
+        <li><a href="#summary">The short version</a></li>
+        <li><a href="#netcode">Netcode: updates and commands</a></li>
+        <li><a href="#sentry">Sentry gun lock-on</a></li>
+        <li><a href="#ramps">Ramp slides and fps</a></li>
+        <li><a href="#versions">Legacy vs 25th Anniversary</a></li>
+        <li><a href="#won">Older versions (WON era)</a></li>
+        <li><a href="#rendering">Rendering: software, Direct3D, OpenGL</a> (and <a href="#modern">choppy on modern hardware</a>)</li>
+        <li><a href="#stuck">Choppiness and getting stuck</a></li>
+        <li><a href="#done">What OTFC has changed</a></li>
+        <li><a href="#players">Settings for players</a></li>
+        <li><a href="#fixes">Fixes we propose</a></li>
+        <li><a href="#testing">Testing we propose</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+        <li><a href="#snips">Analysis: Snips' forum post</a></li>
+      </ol>
+    </div>
+
+    <h2 id="summary"><span class="num">1</span>The short version</h2>
+    <p class="lead">Most of the "jank" is not random. It comes from a few fixed rules in the game and engine that react badly to frame timing and network delay.</p>
+    <div class="grid">
+      <div class="tile"><h4>Netcode</h4><p>The server sends updates on whole server frames, rounded <em>up</em>. Unlucky settings halve your updates (e.g. <code>cl_updaterate 100</code> on a 100-tick server gives ~50 a second).</p></div>
+      <div class="tile"><h4>Sentry guns</h4><p>Pick the first player by slot number, not the nearest; see you with one eye-to-eye line; only notice mid-range players inside their current sweep; and get no lag compensation.</p></div>
+      <div class="tile"><h4>Ramp slides</h4><p>The same ramp at the same speed slides about twice as far at some fps as at others, and at very high fps players can stop dead on the ramp.</p></div>
+      <div class="tile"><h4>25th Anniversary</h4><p>Netcode, movement and sentries are the same as legacy. What it broke is pushing: push fields and pushable crates now depend on server frame rate.</p></div>
+    </div>
+
+    <h2 id="netcode"><span class="num">2</span>Netcode: updates and commands</h2>
+    <p>Two streams matter: the server's <strong>updates</strong> to you (net_graph "in") and your <strong>commands</strong> to the server (net_graph "out"). The timing rules are identical in the legacy and current engines, on both server and client.</p>
+
+    <h3>Server &rarr; you</h3>
+    <p>Each server frame, the server sends you an update if your update interval (1 &divide; <code>cl_updaterate</code>) has passed, then schedules the next one from that frame. So the real gap between updates is your interval <strong>rounded up to whole server frames</strong>.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Server frame length</th><th>cl_updaterate</th><th>Real gap</th><th>Updates you get</th></tr>
+      <tr><td>9.9 ms (<code>sys_ticrate 100</code>)</td><td>100</td><td>2 frames, 19.8 ms</td><td class="bad">~50 / s</td></tr>
+      <tr><td>9.9 ms</td><td>102</td><td>1 frame</td><td class="good">~101 / s</td></tr>
+      <tr><td>5.0 ms (<code>sys_ticrate 200</code>)</td><td>100</td><td>3 frames, 14.9 ms</td><td class="bad">~67 / s</td></tr>
+      <tr><td>5.0 ms</td><td>102</td><td>2 frames</td><td class="good">~100 / s</td></tr>
+      <tr><td>15.6 ms (Windows default timer)</td><td>any</td><td>1 frame</td><td class="bad">~64 / s</td></tr>
+      <tr><td>~1.2 ms (OTFC pickup, high tick)</td><td>102</td><td>9 frames, ~10.7 ms</td><td class="good">~93 / s, evenly spaced</td></tr>
+    </table></div></div>
+    <div class="note"><p><strong>The server doesn't sit idle between updates.</strong> It still runs every frame (about 840 a second on the OTFC pickup server): moving everyone, running grenades and sentries, and taking in your commands the moment they arrive. Only the update <em>sent to you</em> waits, because the game caps you at 102 a second. Each update carries the newest state at that moment, so nothing in between is lost; it just reaches you in ~10.7 ms steps instead of ~9.8 ms. On a 100-tick server the frames themselves are 10 ms apart, so everything is that coarse.</p></div>
+    <ul>
+      <li>That is where the "always use 102" advice comes from: 100 almost never fits a whole number of frames.</li>
+      <li>The game itself caps <code>cl_updaterate</code> at <strong>102</strong>. A server's <code>sv_maxupdaterate</code> above that does nothing.</li>
+      <li>The server only behaves on a steady, fine frame rate, which on Linux needs the <code>-pingboost</code> start option.</li>
+    </ul>
+
+    <h3>You &rarr; server</h3>
+    <ul>
+      <li>Your game builds a command every frame, and the command's length carries the leftover fraction of a millisecond to the next one, so no movement time is lost.</li>
+      <li>It <strong>sends</strong> them by the same round-up rule on your fps. With <code>fps_max 100</code> and <code>cl_cmdrate 100</code> it flips between every frame and every other frame. Set <code>cl_cmdrate</code> a little above your fps.</li>
+      <li>The send timer uses a 32-bit float of time since the game started. It gets coarser the longer the game stays open: about 1 ms after 3 hours, about 8 ms after a day. Restarting resets it.</li>
+    </ul>
+
+    <h2 id="sentry"><span class="num">3</span>Sentry gun lock-on</h2>
+    <p>The sentry thinks every 0.1 s. While idle it checks players in <strong>slot order</strong>; the first one that passes becomes its target, and it keeps that target until it becomes invalid.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>What players notice</th><th>Why</th></tr>
+      <tr><td>It ignores the soldier in its face and keeps shooting someone far away</td><td>Target = first valid player by <strong>slot number</strong>, not the nearest. It never re-picks while the current one is still valid</td></tr>
+      <tr><td>Same spot, sometimes it locks and sometimes not</td><td>Under 500 units it sees all around. From 500 to 1000 units it only sees you within ~45&deg; of <strong>where the turret is pointing right now</strong>, and it is always sweeping &plusmn;50&deg;</td></tr>
+      <tr><td>Head out = shot, body out = fine (or the reverse over a ledge)</td><td>Visibility is <strong>one line</strong> from the sentry's eye to your eyes. Nothing else of your body counts. Crouching moves your eyes</td></tr>
+      <tr><td>Reaction time is all over the place</td><td>It only fires once its aim is within 10&deg;. Turning speeds up gradually from whatever speed the idle sweep left. Behind it: ~1.4 s; just off the barrel: almost instant</td></tr>
+      <tr><td>Concing players above or below are slow to get hit</td><td>Up/down aim moves a fixed 3&deg; per think with no speed-up. A target 40&deg; above buys about a second</td></tr>
+      <tr><td>It turns at different speeds on different servers</td><td>All turning assumes exactly 0.1 s between thinks. Coarse server frames make thinks late and uneven</td></tr>
+    </table></div></div>
+    <h3>Server side vs what you see</h3>
+    <ul>
+      <li><strong>No lag compensation for sentries.</strong> The server rewinds players for hit checks only when a <em>player</em> shoots. A sentry shoots where you are on the server right now. Your screen is ahead of that by roughly half your ping, so you get hit after you have already reached cover on your screen.</li>
+      <li><strong>You see the turret late.</strong> Its aim reaches you half a ping late and is then shown with interpolation delay, so "it locked on before it faced me" is often just that.</li>
+    </ul>
+    <p>None of this changed in the 25th Anniversary update.</p>
+
+    <h2 id="ramps"><span class="num">4</span>Ramp slides and fps</h2>
+    <p>We measured on the real engine and game code: a scout arriving in the air at the foot of an up-ramp, no keys held, at different client frame rates. Movement only depends on your fps (your command lengths), not the server's tick rate.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Ramp</th><th>Speed</th><th>30</th><th>60</th><th>100</th><th>144</th><th>200</th><th>250</th><th>500</th><th>1000 fps</th></tr>
+      <tr><td>20&deg;</td><td>900</td><td>292</td><td>303</td><td>307</td><td class="hl">398</td><td class="hl">407</td><td class="hl">412</td><td class="hl">422</td><td class="hl">426</td></tr>
+      <tr><td>30&deg;</td><td>900</td><td>326</td><td class="hl">482</td><td>334</td><td>335</td><td>336</td><td class="hl">537</td><td class="hl">547</td><td class="hl">551</td></tr>
+      <tr><td>30&deg;</td><td>1200</td><td>623</td><td>628</td><td>630</td><td class="hl">951</td><td>631</td><td class="hl">971</td><td class="hl">985</td><td class="bad">348</td></tr>
+      <tr><td>40&deg;</td><td>600</td><td>114</td><td>117</td><td class="hl">237</td><td class="hl">243</td><td class="hl">246</td><td class="hl">248</td><td class="hl">252</td><td class="bad">29</td></tr>
+      <tr><td>40&deg;</td><td>1200</td><td>510</td><td>512</td><td class="hl">968</td><td>514</td><td class="hl">1008</td><td>515</td><td class="hl">1031</td><td class="bad">174</td></tr>
+    </table></div></div>
+    <p>Height slid up the ramp, in units. The same ramp and speed lands on one of two heights, roughly double or half, depending on fps. At 1000 fps it can stop almost at once.</p>
+    <h3>Three causes</h3>
+    <ol>
+      <li><strong>How you meet the ramp.</strong> Hit it while still in the air and the part of your speed going into the slope is lost (you keep about 87% on 30&deg;, 77% on 40&deg;). Touch the floor for even one frame just before it and the ground movement steps you onto the slope with all your speed. Which happens depends on where your frames fall, so it flips with fps and with timing luck.</li>
+      <li><strong>Gravity per frame.</strong> Lower fps takes bigger gravity steps between the "rising faster than 180 units/s = not on the ground" checks, so you count as landed sooner and friction starts.</li>
+      <li><strong>The ramp bug.</strong> At very high fps each frame's move is tiny, and the collision check, which keeps you 1/32 unit off surfaces, reports "blocked" while you slide along the slope. The movement code then gives up and zeroes your speed: a dead stop.</li>
+    </ol>
+    <div class="note"><p>The 25th Anniversary game code gives the same table to within ~2 units. This is how TFC has always moved; the update neither caused nor fixed it.</p></div>
+
+    <h2 id="versions"><span class="num">5</span>Legacy vs 25th Anniversary</h2>
+    <p>The OTFC servers run the current engine with the <strong>legacy</strong> game code. Players run the current engine and the 25th game client (the Steam default).</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Part</th><th>Same in both</th><th>Changed in 25th</th></tr>
+      <tr><td>Server game</td><td>Movement, concs, ramps, sentry targeting</td><td><span class="bad">Push fields</span> now push by speed &divide; server frame time, so pushes depend on the server's frame rate. <span class="bad">Pushable crates</span> scale with frame time too (new <code>sv_pushable_fixed_tick_fudge</code>). Debug <code>showtriggers</code>. A visual effect on EMP'd sentries</td></tr>
+      <tr><td>Client game</td><td>Movement prediction</td><td>Raw mouse input (<code>m_rawinput</code>), <code>cl_himodels</code>, controller support, Steam rich presence, server browser rework</td></tr>
+      <tr><td>Server engine</td><td>Update timing, frame limiting, rate limiting</td><td>Steam networking and "fake IP", upload limits, <code>sv_allow_autoaim</code>, <code>sv_allow_shaders</code>, map-change config</td></tr>
+      <tr><td>Client engine</td><td>Command timing, the 102 update cap</td><td><code>gl_lowlatency</code> frame pacing, a fix for model interpolation glitches, shader renderer, widescreen field of view, texture filtering, controller and video playback</td></tr>
+    </table></div></div>
+    <p>So the reason communities stayed on legacy is mostly pushing, and the 25th client's extras (raw input, low-latency mode) are worth having.</p>
+
+    <h2 id="won"><span class="num">6</span>Older versions (WON era)</h2>
+    <p>We compared today's code with the original Linux dedicated servers from <strong>1999, 2000, 2002 and 2003</strong> (the last WON release), each with that era's TFC game code and engine, and with the WON Windows clients from 1999 and 2001.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Area</th><th>1999</th><th>2000 &ndash; 2003 (WON)</th><th>Today</th></tr>
+      <tr><td>Sentry targeting, turning, firing</td><td colspan="2">Identical to today: slot order, one sight line, sweep-based view cone, same turn speeds and 10&deg; fire rule</td><td>Same (also targets teleporters, which came later)</td></tr>
+      <tr><td>Updates to you</td><td>One update <strong>per packet you sent</strong> (QuakeWorld style); no <code>cl_updaterate</code></td><td colspan="2">The system we still have: <code>cl_updaterate</code>, rounded up to whole server frames</td></tr>
+      <tr><td>Lag compensation</td><td class="bad">None: you led shots by your ping</td><td colspan="2">Added in 2000 (Half-Life 1.1 / TFC 1.5), unchanged since; never applied to sentries</td></tr>
+      <tr><td>Movement rules (ramps, landing)</td><td>In the engine</td><td colspan="2">In the game code, so your PC can predict it. Same core rules all along (slope limit, the 180 "not on the ground" rule, gravity in two halves)</td></tr>
+      <tr><td>Command length</td><td>&ndash;</td><td>Frame time cut to whole ms, fraction lost (2001 client): movement a few % slow at e.g. 72 fps</td><td class="good">Fraction carried over: no time lost at any fps</td></tr>
+    </table></div></div>
+    <div class="note"><p><strong>Nothing about sentries or ramp physics is a regression.</strong> They are how TFC has always behaved. The netcode is the 2000 rebuild, unchanged. "<code>fps_max 100</code> is best" probably dates from the 2001 client, which lost time at frame rates that don't divide 1000. The big change since then is frame rates: modern clients run far above 100 fps, which is where the ramp bug appears, and modern servers can run a steady high tick, which makes updates better than they were.</p></div>
+
+    <h2 id="rendering"><span class="num">7</span>Rendering: software, Direct3D, OpenGL</h2>
+    <p>The renderer is the part of your game that draws the picture. It never changes hit detection or the movement rules; hits are checked on the server. But it sets your <strong>frame rate</strong>, which changes your movement and how many commands you send, and it changes <strong>what you see</strong>.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Version</th><th>Renderers</th><th>Frame-rate cap</th></tr>
+      <tr><td>WON 1999</td><td>Software, OpenGL, Direct3D (Windows; 3dfx driver included)</td><td>72 online (<code>fps_lan</code>), 30 on modem; no <code>fps_max</code> yet</td></tr>
+      <tr><td>WON 2001</td><td>Software, OpenGL, Direct3D</td><td><code>fps_max</code>, hard cap 100</td></tr>
+      <tr><td>Steam legacy (2020)</td><td>OpenGL only (Linux); the launcher still accepts <code>-soft</code> but has no software renderer to load</td><td>100, or higher with <code>fps_override 1</code></td></tr>
+      <tr><td>25th Anniversary (now)</td><td>OpenGL with a new shader path (on by default), and the <strong>software renderer is back</strong> (<code>-soft</code>)</td><td>100, or higher with <code>fps_override 1</code></td></tr>
+    </table></div></div>
+    <p>So the old "72 fps" was the 1999 default, 100 has been the cap since 2000, and going past 100 needs <code>fps_override 1</code>. We only compared Linux builds of today's client, so whether the current Windows client still has Direct3D is open.</p>
+    <h3>25th client settings that change play</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Setting (default)</th><th>Effect</th></tr>
+      <tr><td><code>gl_vsync 1</code></td><td class="bad">Locks your frame rate to your monitor: on a 60 Hz screen you play at 60 fps (60 fps ramp slides, at most ~60 commands a second) with vsync input lag. <code>gl_vsync 0</code> lets <code>fps_max</code> decide</td></tr>
+      <tr><td><code>gl_widescreen_yfov 1</code></td><td class="hl">On a widescreen your FOV is treated as a 4:3 width and widened: at 16:9 and FOV 90 you see <strong>~106&deg;</strong> across. The legacy client shows 90&deg; and crops top and bottom, so 25th players simply see more to the sides</td></tr>
+      <tr><td><code>gl_lowlatency 0</code></td><td>Optional frame pacing that cuts input lag. It doesn't change what the server sends</td></tr>
+      <tr><td><code>cl_fixmodelinterpolationartifacts 1</code></td><td>Other players' models move more smoothly on screen. Display only</td></tr>
+      <tr><td><code>gl_use_shaders 1</code>, texture filtering, <code>gl_ansio 16</code></td><td>Looks only</td></tr>
+    </table></div></div>
+    <div class="note"><p><strong>In short:</strong> pick the renderer that gives you a steady frame rate; that is all it changes about how you move. Two 25th defaults do matter: turn vsync off (<code>gl_vsync 0</code>), and know that widescreen 25th players see about 16&deg; more than legacy-client players.</p></div>
+
+    <h3 id="modern">Why it can feel choppy on modern hardware</h3>
+    <p>Monitoring tools measure how evenly your PC <em>draws</em> frames, and on that the game is genuinely good: while it has focus it never sleeps, it spins and starts the next frame the moment its frame cap allows, so frame times are very even. The choppiness comes from places those tools don't look.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Cause</th><th>What happens</th></tr>
+      <tr><td><strong>Frame rate vs refresh rate</strong></td><td>100 fps on a 144, 165 or 240 Hz screen without G-Sync/FreeSync can't line up: frames stay up for one refresh, then two, unevenly. That judder is invisible to frame-time graphs. Back in the day 72&ndash;100 fps on a 72&ndash;100 Hz CRT lined up, and CRTs flash each frame instead of holding it, so motion looked crisper than on today's hold-type LCDs at the same fps</td></tr>
+      <tr><td><strong>The cap is half a frame too fast</strong></td><td><code>fps_max N</code> really caps at <strong>N + 0.5</strong>. Set it to your refresh rate (e.g. 144 on 144 Hz, with <code>fps_override 1</code>) and you produce one extra frame every 2 seconds: a regular hitch with vsync on, a slowly crawling tear line with it off</td></tr>
+      <tr><td><strong>Vsync on by default (25th)</strong></td><td>Adds buffering delay, and when your fps is below the refresh rate frames wait for the next refresh: uneven and late</td></tr>
+      <tr><td><strong>The game clock keeps being corrected</strong></td><td>Every update from the server carries the server's time. Your game compares it with its own clock and pulls its clock towards it by up to <code>cl_fixtimerate</code> (<strong>7.5 ms</strong>) per frame. Uneven update arrival (network jitter, coarse server frames) becomes little speed-ups and slow-downs in how <em>other players</em> move, while your own frame times stay perfect</td></tr>
+      <tr><td><strong>Other players update ~93&ndash;100 times a second</strong></td><td>Your screen shows 144&ndash;240 frames, so other players are always blended between updates. Too little <code>ex_interp</code> (section 8) and the blending runs out</td></tr>
+      <tr><td><strong>Your own movement changes with fps</strong></td><td>Above 100 fps your ramp slides and the ramp bug change (section 4), which feels like inconsistency even when the picture is smooth</td></tr>
+    </table></div></div>
+    <h3>Graphics drivers</h3>
+    <p>These are known platform behaviours rather than things we measured, but they fit the symptoms.</p>
+    <ul>
+      <li><strong>Old-style OpenGL.</strong> The game draws with 1990s-style OpenGL (the 25th adds a shader path). Drivers today are tuned for DirectX and Vulkan, and their latency features (NVIDIA Reflex / Low Latency Mode, AMD Anti-Lag) don't apply to OpenGL games. That's why the 25th added its own <code>gl_lowlatency</code>.</li>
+      <li><strong>Windows, windowed or borderless:</strong> OpenGL frames often go through the desktop compositor, which adds a frame of delay and can stop G-Sync/FreeSync working. Use true fullscreen. On NVIDIA, the control panel's "Vulkan/OpenGL present method: Prefer layered on DXGI swapchain" puts OpenGL on the modern present path, and turning "Threaded optimization" off is worth trying for old OpenGL games.</li>
+      <li><strong>AMD and Intel on Windows:</strong> their OpenGL drivers were historically weaker than NVIDIA's (AMD replaced theirs in 2022); fullscreen and up-to-date drivers matter more there.</li>
+      <li><strong>Linux:</strong> the desktop compositor can add a frame of delay (fullscreen or a direct-scanout setup avoids it). Vsync is often forced by the driver (Mesa <code>vblank_mode</code>, NVIDIA <code>__GL_SYNC_TO_VBLANK</code>), and on NVIDIA <code>__GL_MaxFramesAllowed=1</code> cuts queued frames.</li>
+    </ul>
+    <div class="cta-row" style="justify-content:flex-start;margin:1rem 0"><a class="btn btn-ghost" href="/investigation/choppiness">Read the full explanation &rarr;</a></div>
+    <div class="note"><p><strong>Smoothest setup:</strong> true fullscreen; with G-Sync/FreeSync, <code>fps_override 1</code> and <code>fps_max</code> a few below your refresh rate; without it, <code>gl_vsync 0</code>. Try <code>gl_lowlatency 1</code>. <code>cl_fixtimerate</code> below 7.5 (e.g. 2&ndash;3) should make other players' motion steadier at the cost of slower clock syncing; we haven't tested it in game. And remember the trade-off: above 100 fps the picture is smoother but ramp slides behave differently.</p></div>
+
+    <h2 id="stuck"><span class="num">8</span>Choppiness and getting stuck</h2>
+    <h3>Getting stuck on players</h3>
+    <ul>
+      <li><strong>Teammates are solid.</strong> TFC lets everything collide with everything, so you block teammates and they block you.</li>
+      <li><strong>You collide with other players where <em>you</em> saw them.</strong> When the server runs your movement it first rewinds everyone else to where they were on your screen (the same lag compensation used for shots), checks your collisions against those positions, then puts them back. Every player is colliding with everyone else's past, so two players running into each other can end up overlapping in the present.</li>
+      <li><strong>Once overlapped, the server freezes you.</strong> A player whose box is inside something gets <em>no movement at all</em> for that command. The server only retries a small shove every 0.05 s, and the first 27 tries are too small to be used, so it can take over a second. Your own game (the 25th client) tries ducking and searches for a free spot straight away, so on your screen you walk free, then the server pulls you back: rubber-banding.</li>
+    </ul>
+    <div class="note"><p><strong>Tip:</strong> stuck inside another player? <strong>Hold jump, duck or fire.</strong> The server then searches nearby spots for a free one immediately instead of waiting.</p></div>
+
+    <h3>Getting stuck on walls and ramps</h3>
+    <ul>
+      <li><strong>Corners stop you dead.</strong> When a move hits three surfaces at once (an acute corner, a wall meeting a slope), the movement code gives up and sets your speed to zero.</li>
+      <li><strong>The ramp bug is the same rule misfiring.</strong> The code records every surface it bumps in a move without checking for repeats. With tiny moves (high fps) it can bump the <em>same</em> slope twice; two identical surfaces count as a corner whose direction is zero, so your speed becomes zero. That is the dead stop in section 4.</li>
+      <li><strong>Pushed into a wall by a door, lift or blast</strong>, you are inside solid, and the slow server unstick above applies.</li>
+    </ul>
+
+    <h3>Choppiness</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>What you see</th><th>Why</th></tr>
+      <tr><td>Other players stutter or jump</td><td>Your game shows them <code>ex_interp</code> behind the newest update so it always has two updates to blend between. It lets <code>ex_interp</code> go as low as 1000 &divide; <code>cl_updaterate</code> ms (9 ms at 102), but updates arrive ~10&ndash;15 ms apart depending on the server. Set too low, it runs out of updates and players hitch</td></tr>
+      <tr><td>Your own view snaps back now and then</td><td>The server corrected your position (often the stuck rule above, or colliding with a player). The correction is smoothed over <code>cl_smoothtime</code> (0.1 s by default; <code>cl_nosmooth 1</code> makes it snap)</td></tr>
+      <tr><td>Movement feels uneven at 100 fps</td><td>The game's default <code>cl_cmdrate</code> is <strong>60</strong>, so at 100 fps commands go out in an uneven pattern, never every frame</td></tr>
+      <tr><td>Everything is a bit juddery on a 60 Hz screen</td><td>The 25th turns vsync on by default (section 7)</td></tr>
+      <tr><td>Moving items and models jitter</td><td>The 25th's <code>cl_fixmodelinterpolationartifacts 1</code> (default) fixes this for non-player models</td></tr>
+    </table></div></div>
+    <div class="note"><p><strong>Settings:</strong> <code>ex_interp</code> at least <code>0.02</code> (two updates' worth; the old default <code>0.1</code> is smoothest, and lag compensation means it doesn't cost you hits), <code>cl_cmdrate</code> above your fps, <code>gl_vsync 0</code>.</p></div>
+
+    <h2 id="done"><span class="num">9</span>What OTFC has changed</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Change</th><th>Why</th><th></th></tr>
+      <tr><td><code>-pingboost 2</code> on every server</td><td>Steady, precise server frames, so updates and sentry thinks happen on time</td><td><span class="status s-done">Done</span></td></tr>
+      <tr><td><code>sv_minupdaterate 102</code> on every server</td><td>Everyone gets the most updates the game allows (about 93&ndash;100 a second), including on the main server's 200-tick bot mode</td><td><span class="status s-done">Done</span></td></tr>
+      <tr><td><strong>TFC Fixes</strong> (metamod plugin) instead of the old Bug Fixes TFC 1.4</td><td>Same bug fixes done properly: grenade jumps at any tick without dropping the server's frame rate, working teleporter fixes, a MIRV crash fix, push pads the same at any tick</td><td><span class="status s-done">Done</span></td></tr>
+      <tr><td>High tick on the pickup server (~1000)</td><td>Fine frames for updates and sentries</td><td><span class="status s-done">Done</span></td></tr>
+      <tr><td>ReHLDS as a switchable option on the EU pickup server</td><td>Community engine build with many fixes; kept switchable until tested</td><td><span class="status s-todo">Testing</span></td></tr>
+    </table></div></div>
+
+    <h2 id="players"><span class="num">10</span>Settings for players</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Setting</th><th>Why</th></tr>
+      <tr><td><code>cl_updaterate 102</code></td><td>Never less than full updates on any server</td></tr>
+      <tr><td><code>cl_cmdrate</code> a little above your fps (e.g. <code>105</code> at <code>fps_max 100</code>)</td><td>Equal to your fps makes your command rate flip between full and half</td></tr>
+      <tr><td><code>fps_max 100</code> if you rely on ramp slides</td><td>The behaviour everyone learned on; very high fps causes dead stops on ramps</td></tr>
+      <tr><td><code>gl_vsync 0</code></td><td>The 25th client turns vsync on by default, which locks you to your monitor's refresh and adds input lag</td></tr>
+      <tr><td><code>fps_override 1</code> only if you want more than 100 fps</td><td>Without it the game caps you at ~100. Above 100, ramp slides change (section 4)</td></tr>
+      <tr><td><code>ex_interp 0.02</code> or higher</td><td>Lower and other players stutter between updates (section 8)</td></tr>
+      <tr><td>Stuck in a player? Hold jump, duck or fire</td><td>Makes the server search for a free spot straight away</td></tr>
+      <tr><td><code>m_rawinput 1</code></td><td>Raw mouse, no OS acceleration</td></tr>
+      <tr><td>Restart the game every few hours</td><td>The command timer gets coarser the longer the game is open</td></tr>
+    </table></div></div>
+
+    <h2 id="fixes"><span class="num">11</span>Fixes we propose</h2>
+    <p>Each would be a server option, off by default, and only switched on after the community has played with it. Fixes that change balance go to a vote. "Best as" says which kind of server plugin suits each fix (<a href="/investigation/plugins" style="color:#ff9d3d">metamod or AMX Mod X, and why</a>).</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Fix</th><th>What it does</th><th>Best as</th><th></th></tr>
+      <tr><td><strong>Ramp bug</strong></td><td>Stop the movement code treating the same slope hit twice as a corner, so it never zeroes your speed on a plain ramp. Your own game still predicts the old way, so you may see one small correction</td><td><strong>Metamod</strong>: the only way to fix the cause. AMX Mod X: a workaround only</td><td><span class="status s-done">Built: <a href="/fixes" style="color:#6fdc8c">/fixes</a></span></td></tr>
+      <tr><td><strong>Instant unstick on the server</strong></td><td>When a player is stuck, search for a free spot straight away (as your own game already does) instead of one small shove every 0.05 s. Ends most of the rubber-banding after players collide</td><td><strong>Metamod</strong>, alongside the other movement fixes (it checks every player's every move, so compiled code is cheapest). AMX Mod X can also do it</td><td><span class="status s-todo">To build</span></td></tr>
+      <tr><td><strong>Sentry: nearest target</strong></td><td>Aim at the nearest valid enemy (or switch when one is much closer), not the lowest player slot</td><td><strong>Metamod</strong>: hooks the sentry's think directly. AMX Mod X would have to redo the whole sentry in script</td><td><span class="status s-vote">Vote</span></td></tr>
+      <tr><td><strong>Sentry: sees more than heads</strong></td><td>Count you as visible if your eyes, centre or feet can be seen</td><td><strong>Metamod</strong>: hooks the sentry's think directly. AMX Mod X would have to redo the whole sentry in script</td><td><span class="status s-vote">Vote</span></td></tr>
+      <tr><td><strong>Sentry: steady view cone</strong></td><td>Mid-range detection measured from the way it was built facing, not its current sweep</td><td><strong>Metamod</strong>: hooks the sentry's think directly. AMX Mod X would have to redo the whole sentry in script</td><td><span class="status s-vote">Vote</span></td></tr>
+      <tr><td><strong>Sentry: up/down tracking</strong></td><td>Up/down aim speeds up like left/right, so concing players are tracked like everyone else</td><td><strong>Metamod</strong>: hooks the sentry's think directly. AMX Mod X would have to redo the whole sentry in script</td><td><span class="status s-vote">Vote</span></td></tr>
+      <tr><td><strong>Same ramp slide at any fps</strong></td><td>Meeting an up-slope fast behaves the same whether or not you touched the floor a frame before</td><td class="bad">Neither alone: needs a change on players' PCs</td><td><span class="status s-vote">Long test</span></td></tr>
+    </table></div></div>
+
+    <h2 id="testing"><span class="num">12</span>Testing we propose</h2>
+    <p>Most findings here come from reading the game's code and from measurements on a test rig. These tests check them with real players on the OTFC servers, and give each proposed fix a before-and-after. A test night with 6&ndash;10 players covers most of them in an hour or two.</p>
+
+    <h3>Settings players can try now</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Test</th><th>How</th><th>What it tells us</th></tr>
+      <tr><td><strong>Clock correction</strong></td><td>Watch a player strafing back and forth with <code>cl_fixtimerate 7.5</code> (default), then <code>2</code>. Same server, same spot</td><td>Whether the game clock correction causes the "everyone else is jittery" feeling (<a href="/investigation/choppiness#clock">details</a>)</td></tr>
+      <tr><td><strong>Interpolation</strong></td><td>The same strafing player with <code>ex_interp 0.01</code>, <code>0.02</code> and <code>0.1</code></td><td>The lowest smooth setting on our servers</td></tr>
+      <tr><td><strong>Display setup</strong></td><td>Windowed vs true fullscreen, vsync on vs off, and (with G-Sync/FreeSync) <code>fps_max</code> a few below the refresh rate</td><td>Which display setups fix judder and delay, per GPU vendor</td></tr>
+      <tr><td><strong>Voice lag</strong></td><td>Several players talk at once while you watch <code>net_graph 3</code> (choke) with your usual <code>rate</code>, then with <code>rate 100000</code>; <code>voice_profile 1</code> shows decoding time</td><td>Whether voice lag is choked updates or decoding (<a href="/investigation/qa">Q&amp;A</a>)</td></tr>
+      <tr><td><strong>Stuck in a player</strong></td><td>Two players walk into each other until stuck, then one holds jump</td><td>Confirms the "hold jump, duck or fire" tip</td></tr>
+    </table></div></div>
+
+    <h3>Server measurements</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Test</th><th>How</th><th>What it tells us</th></tr>
+      <tr><td><strong>Real update rate</strong></td><td>Capture the packets a player receives (Wireshark, like Snips did) on each OTFC server, with bots on and off, and count them per second and the gaps between them</td><td>Whether players really get ~93&ndash;100 evenly spaced updates now, and the effect of <code>sv_minupdaterate 102</code> on the main server's 200-tick bot mode</td></tr>
+      <tr><td><strong>Server frame rate under load</strong></td><td><code>rcon stats</code> every few minutes during a full game</td><td>Whether the single-core VPS keeps its tick with a full server</td></tr>
+      <tr><td><strong>ReHLDS vs Valve's engine</strong></td><td>The same pickup played once on each engine (the EU pickup server switches with one command); packet capture as above, plus CPU and any errors</td><td>Whether ReHLDS sends updates the same way, and whether it is safe to use by default</td></tr>
+    </table></div></div>
+
+    <h3>Movement and sentries</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Test</th><th>How</th><th>What it tells us</th></tr>
+      <tr><td><strong>Ramp slides by fps</strong></td><td>The same conc onto the same ramp at <code>fps_max 100</code>, 144 and 1000 (with <code>fps_override 1</code>), ten tries each</td><td>Confirms the rig results in real play: slide height jumps between fps, dead stops at very high fps</td></tr>
+      <tr><td><strong>Sentry slot order</strong></td><td>Two attackers, one far and one close, joining in different orders; note which one the sentry shoots</td><td>Confirms the sentry picks by player slot, not distance</td></tr>
+      <tr><td><strong>Sentry reaction</strong></td><td>Record a demo walking into a sentry's view from behind, from the side, and concing over it; time to first shot</td><td>A baseline to compare the proposed sentry options against</td></tr>
+      <tr><td><strong>TFC Fixes in play</strong></td><td>A normal night, then check <code>rcon tfx</code> for how often each fix stepped in; ask players about push pads and grenade jumps</td><td>Which bugs actually happen on our servers, and whether the push-pad change feels right</td></tr>
+    </table></div></div>
+
+    <h3>Before and after each fix</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Fix</th><th>Test</th><th></th></tr>
+      <tr><td>Ramp bug</td><td>Ramp-slide test at 1000 fps with the fix off and on: dead stops should disappear, nothing else should change</td><td><span class="status s-todo">After build</span></td></tr>
+      <tr><td>Instant unstick</td><td>Stuck-in-a-player test with the fix off and on: rubber-banding should stop without holding jump</td><td><span class="status s-todo">After build</span></td></tr>
+      <tr><td>Sentry options</td><td>A few rounds with each option on its own, then a vote</td><td><span class="status s-vote">Vote</span></td></tr>
+    </table></div></div>
+    <div class="note"><p>Want to help? Join a test night in the OTFC Discord, or try the player settings above and tell us what you notice, with your GPU, monitor refresh rate and whether you use G-Sync/FreeSync.</p></div>
+
+    <h2 id="conclusion"><span class="num">13</span>Conclusion</h2>
+    <div class="conclusion">
+      <p><strong>TFC isn't janky at random.</strong> Most of it comes down to three things: the engine rounding updates and commands to whole frames, sentry guns using simple rules (slot order, one sight line, a sweeping view cone, no lag compensation), and movement that depends on your frame rate.</p>
+      <p>The networking part is fixed with settings, and the OTFC servers now run them: precise frames with <code>-pingboost</code>, a high tick, and everyone on 102 updates a second. On your side: <code>cl_updaterate 102</code>, <code>cl_cmdrate</code> above your fps, and <code>fps_max 100</code> if you ramp slide.</p>
+      <p>The 25th Anniversary update didn't change any of this. Its real damage was pushing, which is why OTFC keeps the legacy game code while players can still use the newer client's extras.</p>
+      <p>Comparing with the original WON-era versions (1999&ndash;2003) shows the sentry and ramp behaviour have been there since the start, and the netcode is the 2000 rebuild, unchanged. So fixing them means changing TFC, not restoring it.</p>
+      <p>What's left needs code: a ramp-bug fix we can add with little risk, and sentry changes that alter balance, which the community should try and vote on.</p>
+    </div>
+
+    <h2 id="snips"><span class="num">14</span>Analysis: Snips' forum post</h2>
+    <p>[IOD]Snips' post on server frame timing started a lot of this. Here is each of its points checked against what we found in the game and engine.</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>The post says</th><th>Verdict</th><th>What we found</th></tr>
+      <tr><td>Players get ~66 updates a second (59&ndash;80) instead of 100, unevenly spaced</td><td class="good">True</td><td>Updates only go out on server frames, rounded up. A server stuck on a 15.6 ms timer runs ~64 frames a second, so that is the most you can get, and the gaps jump between one and two frames</td></tr>
+      <tr><td>The cause is the operating system's 15.6 ms timer</td><td class="good">True on Windows</td><td>The Windows dedicated server only reads the clock; it never asks Windows for a finer timer, so it runs on whatever timer the machine has (15.6 ms unless something else raises it)</td></tr>
+      <tr><td>On Linux, use <code>-pingboost 2</code> or <code>3</code>; ideally a 1000 Hz kernel</td><td class="good">True</td><td><code>-pingboost</code> changes how the server waits between frames. All OTFC servers now run <code>-pingboost 2</code>; the pickup server reaches ~840 steady frames a second. Modern kernels have fine timers, so the kernel setting matters less than it did</td></tr>
+      <tr><td>On Windows, run a high-resolution timer tool, or the MMTimer metamod plugin</td><td class="hl">Plausible</td><td>Fits the finding above. MMTimer is Windows-only; a Linux server doesn't need it</td></tr>
+      <tr><td>Or use an AMX plugin with a fast <code>set_task</code> loop</td><td class="bad">False</td><td>AMX Mod X won't run a task more often than every 0.1 s, and a plugin task can't make the engine run more frames anyway</td></tr>
+      <tr><td>Every server should use <code>sv_maxupdaterate 102</code>; the engine can't take more than 102</td><td class="hl">Half right</td><td>The game caps <code>cl_updaterate</code> at 102 on your PC, so higher server values do nothing. But the maximum alone doesn't fix the rounding: <code>cl_updaterate 100</code> on a 100-tick server still gives ~50. What helps is <code>sv_minupdaterate 102</code> (now on all OTFC servers) plus fine server frames</td></tr>
+      <tr><td>Never set <code>sv_maxupdaterate</code> to 0</td><td class="bad">False</td><td>0 means "no server limit"; your own game still caps you at 102. Only tiny non-zero values are a problem, and the engine resets those to 30</td></tr>
+      <tr><td>The 25th Anniversary "Lower Input Latency" (<code>gl_lowlatency</code>) makes it worse</td><td class="bad">Unrelated</td><td>It paces your own frames against your display. It cannot change what the server sends you</td></tr>
+      <tr><td><code>sys_ticrate 1000</code> makes hand-grenade jumps pop straight up; the fix is TFC Bug Fix #17</td><td class="good">True</td><td>The push direction comes from how far you moved in the frame before the blast, and at 1000 tick that frame usually has no movement in it. OTFC now uses TFC Fixes, which does #17 without dropping the server's frame rate</td></tr>
+      <tr><td>At 1000, bots move and think slower and fall floaty</td><td class="good">True</td><td>FoxBot counts each frame as whole milliseconds and drops the rest: about 13% slow motion at ~870 frames a second</td></tr>
+      <tr><td>Concs, ramp slides and bhops are unaffected by <code>sys_ticrate 1000</code></td><td class="good">True</td><td>Your movement depends on <em>your</em> fps (the length of your commands), not the server's tick. Ramp slides do change with <em>client</em> fps (section 4)</td></tr>
+      <tr><td>Fine timing makes your commands get processed sooner</td><td class="good">True</td><td>The server reads your commands every frame, so at ~1 ms frames they wait about half a millisecond instead of up to a whole 10&ndash;15 ms frame</td></tr>
+      <tr><td>Pings drop 10&ndash;20 ms with 1000 tick</td><td class="hl">Overstated</td><td>The saving is about half a server frame: ~5 ms from a 100-tick server, ~8 ms from a 64-frame one</td></tr>
+      <tr><td>"Bad hitboxes that come and go" from unevenly timed updates</td><td class="hl">Plausible</td><td>Your game blends between the last two updates over at least 1 &divide; <code>cl_updaterate</code>. When updates arrive 15&ndash;30 ms apart it runs out of updates to blend, so players stutter or jump. Not measured in game</td></tr>
+      <tr><td>No downside except 5&ndash;15% more electricity</td><td class="s-todo" style="font-weight:700;color:#b6bdd0">Not checked</td><td>On the OTFC servers CPU load stayed low after the change; bots are the real downside (above)</td></tr>
+    </table></div></div>
+    <div class="note"><p><strong>Overall:</strong> the post's core is right. Coarse server frames cost updates, and fine, steady frames (<code>-pingboost</code> on Linux, a high tick, the grenade-jump fix) are the cure. Two pieces of its advice don't work (the AMX loop and the warning about 0), and the update fix needs <code>sv_minupdaterate 102</code>, not just the maximum. OTFC now follows every part that holds up.</p></div>
+  </div>
+</div>

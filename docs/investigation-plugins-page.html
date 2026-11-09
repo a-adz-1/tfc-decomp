@@ -1,0 +1,86 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC investigation &middot; deep dive</span>
+    <h1>Metamod or AMX Mod X?</h1>
+    <p class="sub">Which kind of server plugin each proposed fix should be, and why.</p>
+    <div class="cta-row"><a class="btn btn-ghost" href="/investigation#fixes">&larr; Back to the fixes</a></div>
+  </div>
+  <div class="inv">
+    <div class="toc"><ol>
+      <li><a href="#types">The two kinds of server plugin</a></li>
+      <li><a href="#table">Each fix, and the best kind</a></li>
+      <li><a href="#why">Why, fix by fix</a></li>
+      <li><a href="#plan">Our plan</a></li>
+    </ol></div>
+
+    <h2 id="types"><span class="num">1</span>The two kinds of server plugin</h2>
+    <div class="grid">
+      <div class="tile"><h4>Metamod</h4><p>Compiled code (like TFC Fixes) that sits between the engine and the game. Fast, and the only kind that can replace the game's own steps, such as the movement code or a sentry's think. Harder to write and change.</p></div>
+      <div class="tile"><h4>AMX Mod X</h4><p>Scripts that run inside the AMX Mod X plugin (itself a metamod plugin). Easy for the community to install, read and edit, but slower and limited to what AMX Mod X exposes. It can't change code inside the game's movement step.</p></div>
+    </div>
+
+    <h2 id="table"><span class="num">2</span>Each fix, and the best kind</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Fix</th><th>Best as</th><th>Could AMX Mod X do it?</th></tr>
+      <tr><td><strong>Instant unstick</strong></td><td class="good">Metamod</td><td class="good">Yes</td></tr>
+      <tr><td><strong>Ramp bug</strong> (dead stops)</td><td class="good">Metamod</td><td class="hl">Workaround only</td></tr>
+      <tr><td><strong>Corners slide instead of stopping</strong> (optional)</td><td class="good">Metamod</td><td class="bad">No</td></tr>
+      <tr><td><strong>Sentry options</strong> (nearest target, more sight lines, steady view cone, up/down tracking)</td><td class="good">Metamod</td><td class="hl">Possible but hard</td></tr>
+      <tr><td><strong>Same ramp slide at any fps</strong></td><td class="bad">Neither alone</td><td class="bad">No: needs a change on players' PCs</td></tr>
+      <tr><td><strong>Map edges that snag</strong></td><td>Not a plugin</td><td>Fixed in the map</td></tr>
+    </table></div></div>
+
+    <h2 id="why"><span class="num">3</span>Why, fix by fix</h2>
+    <h3>Instant unstick</h3>
+    <p>Before each move, check whether the player's box is inside something and, if so, move them to the nearest free spot. AMX Mod X can do this with the engine's own hull check. Metamod is still the better home: the check runs for every player on every move, so compiled code is cheapest, and it belongs with the other movement fixes.</p>
+    <h3>Ramp bug</h3>
+    <p>The cause is inside the movement code: a repeated surface is counted as a corner and your speed is zeroed. Only a metamod plugin can replace that step and fix it. AMX Mod X could only notice afterwards that a fast slide suddenly stopped, and give the speed back, which is guesswork and still loses that moment.</p>
+    <h3>Corners</h3>
+    <p>Same place in the movement code. From outside you can't tell a real corner stop from a harsh one, so there's no AMX Mod X workaround.</p>
+    <h3>Sentry options</h3>
+    <p>A metamod plugin can hook the sentry's think and change just the targeting or turning. AMX Mod X can't hook those steps on their own; it would have to take over the whole sentry and redo its turning, aiming and firing in script, reading the game's internal values from memory. Doable, but fragile and slow.</p>
+    <h3>Ramp slides at any fps</h3>
+    <p>Players' PCs predict their own movement with the original rules, so any server-side change to how slides work would correct players on every ramp. It needs a change on the client too, whatever kind of server plugin is used.</p>
+
+    <h2 id="plan"><span class="num">4</span>Our plan</h2>
+    <ul>
+      <li><strong>One metamod plugin</strong> next to TFC Fixes with instant unstick, the ramp-bug fix and (off by default) the corner fix, each switchable on its own.</li>
+      <li><strong>Sentry options in metamod too</strong>, off by default, for the community to try and vote on.</li>
+      <li>Whatever the plugin, players' PCs still predict the original movement, so you'd see one small correction at the moments a fix kicks in.</li>
+    </ul>
+    <div class="note"><p>Status: the ramp-bug fix is built and running on the OTFC servers (<a href="/fixes" style="color:#ff9d3d">download</a>); the rest is proposed. See <a href="/investigation/fixing-movement" style="color:#ff9d3d">Fixing movement</a> for what each fix does.</p></div>
+  </div>
+</div>

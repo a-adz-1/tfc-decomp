@@ -1,0 +1,189 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv .tl { margin: 0.6rem 0 1.4rem; }
+  .inv .tl .row { display: flex; gap: 2px; margin: 0.25rem 0; align-items: center; }
+  .inv .tl .lab { width: 7.5rem; flex: none; font-size: 0.8rem; color: #8b93a8; }
+  .inv .tl .seg { height: 1.5rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #0d0f16; }
+  .inv .tl .one { background: #6fdc8c; }
+  .inv .tl .two { background: #ff9d3d; }
+  .inv .tl .three { background: #ff7a6b; }
+  .inv .tl .even { background: #7aa7ff; }
+  .inv .steps { counter-reset: st; list-style: none; padding-left: 0; }
+  .inv .steps li { counter-increment: st; position: relative; padding-left: 2.4rem; margin: 0.7rem 0; }
+  .inv .steps li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: #ff9d3d22; border: 1px solid #ff9d3d66; color: #ff9d3d; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+  .inv .flow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0; font-size: 0.88rem; }
+  .inv .flow .box { background: #ffffff0a; border: 1px solid #ffffff1a; border-radius: 10px; padding: 0.5rem 0.8rem; }
+  .inv .flow .box.seen { border-color: #6fdc8c66; }
+  .inv .flow .box.unseen { border-color: #ff7a6b66; }
+  .inv .flow .arr { color: #8b93a8; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC investigation &middot; deep dive</span>
+    <h1>Smooth graphs, choppy game</h1>
+    <p class="sub">Why TFC can look stuttery and feel delayed on a fast modern PC with a high refresh rate, even when every monitoring tool says frame times, pacing and latency are perfect.</p>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="/investigation#modern">&larr; Back to the investigation</a>
+    </div>
+  </div>
+
+  <div class="inv">
+    <div class="toc"><ol>
+      <li><a href="#measure">What your tools measure</a></li>
+      <li><a href="#pacing">How the game paces frames</a></li>
+      <li><a href="#refresh">Frame rate vs refresh rate</a></li>
+      <li><a href="#half">The extra half frame</a></li>
+      <li><a href="#clock">The game clock correction</a></li>
+      <li><a href="#others">Other players between updates</a></li>
+      <li><a href="#delay">Where the delay comes from</a></li>
+      <li><a href="#drivers">Graphics drivers, by vendor</a></li>
+      <li><a href="#then">Why it felt better back then</a></li>
+      <li><a href="#setup">Recommended setups</a></li>
+      <li><a href="#test">How to test it yourself</a></li>
+    </ol></div>
+
+    <h2 id="measure"><span class="num">1</span>What your tools measure</h2>
+    <p>A picture of another player on your screen goes through two separate chains. Monitoring tools only see the first one.</p>
+    <div class="flow">
+      <div class="box seen">Game draws a frame</div><span class="arr">&rarr;</span>
+      <div class="box seen">Driver queues it</div><span class="arr">&rarr;</span>
+      <div class="box unseen">Compositor (windowed)</div><span class="arr">&rarr;</span>
+      <div class="box unseen">Monitor refresh</div>
+    </div>
+    <div class="flow">
+      <div class="box unseen">Server update</div><span class="arr">&rarr;</span>
+      <div class="box unseen">Network</div><span class="arr">&rarr;</span>
+      <div class="box unseen">Game clock</div><span class="arr">&rarr;</span>
+      <div class="box unseen">Blend between updates</div><span class="arr">&rarr;</span>
+      <div class="box seen">Position drawn this frame</div>
+    </div>
+    <p>Frame-time graphs, frame pacing and "render latency" describe the green boxes: how evenly your PC produces frames. What you <em>see</em> also depends on how those frames meet your monitor's refreshes, and on <em>which moment of the game</em> each frame shows. Both can be uneven while the graph is a flat line.</p>
+
+    <h2 id="pacing"><span class="num">2</span>How the game paces frames</h2>
+    <p>The engine's frame limiter is actually very precise. While the game window has focus it never sleeps: it loops, checking the clock, and starts the next frame the moment enough time has passed. (It only sleeps, 20&ndash;50 ms at a time, when the window is in the background.) So frame times really are even, and your tools are right about that. It also means one CPU core is always busy, which is normal for this engine.</p>
+    <p>The cap itself: frames may start <code>1 &divide; (fps_max + 0.5)</code> seconds apart. Without <code>fps_override 1</code>, <code>fps_max</code> can't go above 100.</p>
+
+    <h2 id="refresh"><span class="num">3</span>Frame rate vs refresh rate</h2>
+    <p>Each box below is one game frame at the default cap (100 fps, really 100.5), and the number is how many monitor refreshes it stays on screen with vsync on. Every frame is drawn exactly 10 ms apart, so a frame-time graph is perfectly flat, yet what reaches your eyes is not:</p>
+    <div class="tl"><div class="row"><div class="lab">100 Hz</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div><div class="seg even" style="flex:1">1</div></div><div class="row"><div class="lab">144 Hz</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div></div><div class="row"><div class="lab">165 Hz</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg one" style="flex:1">1</div><div class="seg two" style="flex:2">2</div></div><div class="row"><div class="lab">240 Hz</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div><div class="seg three" style="flex:3">3</div><div class="seg two" style="flex:2">2</div><div class="seg two" style="flex:2">2</div></div></div>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Monitor</th><th>100 fps frames shown for</th><th>Result</th></tr>
+      <tr><td>60 Hz</td><td>Capped to 60 by vsync</td><td>Even, but only 60 frames and vsync delay</td></tr>
+      <tr><td>100 Hz</td><td>1 refresh each</td><td class="good">Even (apart from the half frame, next section)</td></tr>
+      <tr><td>120 Hz</td><td>81% one refresh, 19% two</td><td class="hl">A double-length frame every ~5 frames</td></tr>
+      <tr><td>144 Hz</td><td>57% one, 43% two (6.9 or 13.9 ms)</td><td class="bad">Constant uneven judder</td></tr>
+      <tr><td>165 Hz</td><td>36% one, 64% two</td><td class="bad">Uneven judder</td></tr>
+      <tr><td>240 Hz</td><td>61% two, 39% three (8.3 or 12.5 ms)</td><td class="hl">Uneven, a little finer</td></tr>
+    </table></div></div>
+    <p>G-Sync/FreeSync (VRR) fixes this completely: the monitor waits for each frame instead, so every frame stays up exactly 10 ms. Without VRR, the alternatives are a refresh rate that divides evenly into your fps, or a much higher fps (which changes ramp-slide physics, see the main page).</p>
+
+    <h2 id="half"><span class="num">4</span>The extra half frame</h2>
+    <p>Because the cap is <code>fps_max + 0.5</code>, setting <code>fps_max</code> to your refresh rate makes the game produce half a frame per second more than the monitor shows:</p>
+    <ul>
+      <li><strong>Vsync on:</strong> every 2 seconds one frame has nowhere to go. It waits, the queue grows by a frame, and you get a small hitch plus extra delay, then it repeats.</li>
+      <li><strong>Vsync off:</strong> the tear line slowly crawls up or down the screen, a full screen every 2 seconds.</li>
+    </ul>
+    <p>On a 100 Hz screen with the default <code>fps_max 100</code> this happens out of the box. With VRR, keep <code>fps_max</code> a few below the refresh rate so the cap, not the monitor, sets the pace.</p>
+
+    <h2 id="clock"><span class="num">5</span>The game clock correction</h2>
+    <p>This is the part no frame-time tool can see. Your game keeps its own clock of "server time" and draws other players at that time, minus the interpolation delay.</p>
+    <ol class="steps">
+      <li>Every update from the server carries the server's time when it was sent.</li>
+      <li>When it arrives, your game notes how far its own clock is from that time.</li>
+      <li>Every frame after that, it pulls its clock towards the server's by up to <code>cl_fixtimerate</code> milliseconds (default <strong>7.5</strong>), until they are within 1 ms. (If they are far apart, past <code>cl_clockreset</code>, it simply jumps.)</li>
+    </ol>
+    <p>Updates never arrive perfectly evenly: the network adds jitter, and the server sends on its own frames (on the OTFC pickup server every ~10.7 ms, elsewhere 10&ndash;15 ms). So the clock is nudged forwards and backwards all the time, and other players are drawn a little ahead or behind where an even clock would put them:</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Correction in one frame</th><th>Player running (400 u/s)</th><th>Player after a conc (~1000 u/s)</th></tr>
+      <tr><td>2 ms</td><td>0.8 units</td><td>2 units</td></tr>
+      <tr><td>7.5 ms (the most per frame)</td><td>3 units</td><td>7.5 units, about a quarter of a player's width</td></tr>
+    </table></div></div>
+    <p>At high fps the correction is spread over more frames per second, so it is applied in more, smaller steps, but it is still there. Your own movement isn't affected: you are drawn from your own prediction, not this clock. That's why "I'm smooth but everyone else is jittery" is the typical complaint.</p>
+
+    <h2 id="others"><span class="num">6</span>Other players between updates</h2>
+    <p>Other players only change position when an update arrives, about 93&ndash;100 times a second. Your game hides that by showing them <code>ex_interp</code> in the past and blending between the two updates around that moment. The game lets <code>ex_interp</code> go as low as 1000 &divide; <code>cl_updaterate</code> ms (9 ms at 102), but updates arrive 10&ndash;15 ms apart, so a very low setting regularly runs out of updates to blend, and players hitch. Keep it at least <code>0.02</code>; the old default <code>0.1</code> is smoothest, and lag compensation means it doesn't cost you hits.</p>
+
+    <h2 id="delay"><span class="num">7</span>Where the delay comes from</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Source</th><th>Typical extra delay</th><th>Fix</th></tr>
+      <tr><td>Vsync (on by default in the 25th)</td><td>1&ndash;2 refreshes</td><td><code>gl_vsync 0</code>, or VRR</td></tr>
+      <tr><td>Desktop compositor (windowed/borderless)</td><td>~1 refresh</td><td>True fullscreen</td></tr>
+      <tr><td>Driver frame queue</td><td>Up to a few frames when the GPU is the limit</td><td>Driver settings (section 8); <code>gl_lowlatency 1</code></td></tr>
+      <tr><td>Interpolation (<code>ex_interp</code>)</td><td>What you set (default 100 ms)</td><td>By design; compensated for hits</td></tr>
+      <tr><td>Clock correction</td><td>Not a delay, an unevenness</td><td>Steady servers; maybe lower <code>cl_fixtimerate</code></td></tr>
+    </table></div></div>
+    <p>The 25th Anniversary's <code>gl_lowlatency 1</code> paces your frames to finish just before the monitor needs them (its timing margins default to 2&ndash;5 ms), cutting the queue delay. It doesn't change networking.</p>
+
+    <h2 id="drivers"><span class="num">8</span>Graphics drivers, by vendor</h2>
+    <p>TFC draws with 1990s-style OpenGL (the 25th adds a shader path on top). Modern drivers are built around DirectX 11/12 and Vulkan, and their latency tools (NVIDIA Reflex and Low Latency Mode, AMD Anti-Lag) don't apply to OpenGL games. What does matter:</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Platform</th><th>What to know</th></tr>
+      <tr><td>NVIDIA, Windows</td><td>Control panel, per game: "Vulkan/OpenGL present method" = <strong>Prefer layered on DXGI swapchain</strong> (modern presentation, VRR in borderless); try "Threaded optimization" <strong>Off</strong>; "Max frame rate" can replace <code>fps_max</code> as a cap</td></tr>
+      <tr><td>AMD, Windows</td><td>The OpenGL driver was rewritten in 2022 and is much better since; use a current driver. Anti-Lag doesn't cover OpenGL, so use true fullscreen and <code>gl_lowlatency 1</code></td></tr>
+      <tr><td>Intel, Windows</td><td>Fine on current drivers; use true fullscreen</td></tr>
+      <tr><td>Linux, AMD/Intel (Mesa)</td><td>Vsync may be forced by the driver (<code>vblank_mode=0</code> turns that off); a compositor can add a frame unless the game is fullscreen with direct scanout</td></tr>
+      <tr><td>Linux, NVIDIA</td><td><code>__GL_SYNC_TO_VBLANK=0</code> for vsync off; <code>__GL_MaxFramesAllowed=1</code> limits queued frames</td></tr>
+    </table></div></div>
+    <p>These are known platform behaviours, not things we measured. Your results may differ by driver version.</p>
+
+    <h2 id="then"><span class="num">9</span>Why it felt better back then</h2>
+    <ul>
+      <li><strong>Matched refresh.</strong> 72&ndash;100 fps (the old caps) on a 72&ndash;100 Hz CRT lined up frame for frame.</li>
+      <li><strong>CRTs flash each frame.</strong> A CRT lights each frame briefly; an LCD holds it for the whole refresh, which your eye sees as blur when tracking movement. 100 fps on a CRT looked sharper than 100 fps on most LCDs. (High-refresh OLEDs and "strobing" modes get close again.)</li>
+      <li><strong>Full-screen exclusive, no compositor, no vsync by default.</strong> Fewer stages between the game and the screen.</li>
+      <li><strong>What was the same:</strong> the netcode (rebuilt in 2000 and unchanged since) and the clock correction. Older connections had more jitter, if anything.</li>
+    </ul>
+
+    <h2 id="setup"><span class="num">10</span>Recommended setups</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Your setup</th><th>Settings</th></tr>
+      <tr><td>G-Sync / FreeSync monitor</td><td>True fullscreen, VRR on; <code>fps_override 1</code>, <code>fps_max</code> = refresh &minus; 3 (e.g. 141 on 144 Hz); <code>gl_vsync 0</code> in game (let the driver handle it); <code>gl_lowlatency 1</code></td></tr>
+      <tr><td>No VRR, high refresh</td><td>True fullscreen; <code>gl_vsync 0</code>; either keep 100 fps (classic physics, some judder) or raise <code>fps_max</code> well above the refresh rate (smoother, but ramp slides change)</td></tr>
+      <tr><td>100 Hz monitor</td><td><code>fps_max 100</code> lines up; vsync off to avoid the 2-second hitch</td></tr>
+      <tr><td>60 Hz monitor</td><td><code>gl_vsync 0</code>, <code>fps_max 100</code> (tearing, but classic physics and less delay)</td></tr>
+      <tr><td>Everyone</td><td><code>cl_updaterate 102</code>, <code>cl_cmdrate</code> above your fps, <code>ex_interp 0.02</code> or more, <code>m_rawinput 1</code></td></tr>
+    </table></div></div>
+
+    <h2 id="test"><span class="num">11</span>How to test it yourself</h2>
+    <ol class="steps">
+      <li>Join a server with a friend or bot strafing back and forth in front of you. Turn on <code>net_graph 3</code>.</li>
+      <li>Watch the strafing player for a minute with the defaults (<code>cl_fixtimerate 7.5</code>).</li>
+      <li>Set <code>cl_fixtimerate 2</code> and watch again. If their motion looks steadier, clock correction was part of your choppiness. (We haven't tested this in game yet; tell us what you see.)</li>
+      <li>Try <code>ex_interp 0.01</code>, then <code>0.1</code>: the difference shows how much interpolation covers.</li>
+      <li>Compare windowed and true fullscreen, and vsync on and off.</li>
+    </ol>
+    <div class="note"><p>Found something that helps? Tell us in the OTFC Discord so we can add it here.</p></div>
+  </div>
+</div>

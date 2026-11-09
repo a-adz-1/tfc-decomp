@@ -1,0 +1,132 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv .tl { margin: 0.6rem 0 1.4rem; }
+  .inv .tl .row { display: flex; gap: 2px; margin: 0.25rem 0; align-items: center; }
+  .inv .tl .lab { width: 7.5rem; flex: none; font-size: 0.8rem; color: #8b93a8; }
+  .inv .tl .seg { height: 1.5rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #0d0f16; }
+  .inv .tl .one { background: #6fdc8c; }
+  .inv .tl .two { background: #ff9d3d; }
+  .inv .tl .three { background: #ff7a6b; }
+  .inv .tl .even { background: #7aa7ff; }
+  .inv .steps { counter-reset: st; list-style: none; padding-left: 0; }
+  .inv .steps li { counter-increment: st; position: relative; padding-left: 2.4rem; margin: 0.7rem 0; }
+  .inv .steps li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: #ff9d3d22; border: 1px solid #ff9d3d66; color: #ff9d3d; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+  .inv .flow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0; font-size: 0.88rem; }
+  .inv .flow .box { background: #ffffff0a; border: 1px solid #ffffff1a; border-radius: 10px; padding: 0.5rem 0.8rem; }
+  .inv .flow .box.seen { border-color: #6fdc8c66; }
+  .inv .flow .box.unseen { border-color: #ff7a6b66; }
+  .inv .flow .arr { color: #8b93a8; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC investigation &middot; deep dive</span>
+    <h1>Fixing movement</h1>
+    <p class="sub">What can be fixed about ramp slides and getting stuck on walls and players, how, and what can't be fixed from the server alone.</p>
+    <div class="cta-row"><a class="btn btn-ghost" href="/investigation/qa">&larr; Back to the Q&amp;A</a></div>
+  </div>
+  <div class="inv">
+    <div class="toc"><ol>
+      <li><a href="#overview">The short version</a></li>
+      <li><a href="#walls">Getting stuck on walls</a></li>
+      <li><a href="#rampbug">The ramp bug (dead stops)</a></li>
+      <li><a href="#rampfps">Ramp slides changing with fps</a></li>
+      <li><a href="#players">Getting stuck on players</a></li>
+      <li><a href="#how">How the fixes would work</a></li>
+      <li><a href="#proof">How we'd prove them</a></li>
+    </ol></div>
+
+    <h2 id="overview"><span class="num">1</span>The short version</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Problem</th><th>Can we fix it?</th><th>Risk</th><th>Best as</th></tr>
+      <tr><td>Frozen in a wall, then snapped back</td><td class="good">Yes: instant unstick</td><td>Low</td><td><strong>Metamod</strong> (AMX Mod X can too)</td></tr>
+      <tr><td>Dead stop on a plain ramp (ramp bug)</td><td class="good">Yes: one-line fix</td><td>Low</td><td><strong>Metamod</strong> (AMX Mod X: workaround only)</td></tr>
+      <tr><td>Dead stop in corners</td><td class="hl">Yes, as an option</td><td>Changes how corners feel: vote</td><td><strong>Metamod</strong> only</td></tr>
+      <tr><td>Catching on certain map edges</td><td class="hl">Per map</td><td>Map work</td><td>Not a plugin job: fixed in the map</td></tr>
+      <tr><td>Ramp slides changing with fps</td><td class="bad">Not from the server alone</td><td>Would change every slide</td><td class="bad">Neither alone: needs players' PCs</td></tr>
+      <tr><td>Overlapping players after a collision</td><td class="hl">The freeze, yes (instant unstick); the overlap itself is engine</td><td>Low / engine work</td><td>The freeze: as instant unstick. The overlap: engine only</td></tr>
+    </table></div></div>
+
+
+    <h3>Metamod or AMX Mod X?</h3>
+    <p>Metamod plugins (like TFC Fixes) are compiled code: faster, and the only kind that can change the movement code itself. AMX Mod X plugins are scripts: easier to install and edit, but slower and more limited. All the movement fixes are best together in one metamod plugin. <a href="/investigation/plugins" style="color:#ff9d3d">More on the plugin types &rarr;</a></p>
+    <ul>
+      <li><strong>Instant unstick: AMX Mod X can do it.</strong> A plugin checks each player before their move, and if their box is inside something, searches nearby spots and moves them to a free one, so the game never freezes them.</li>
+      <li><strong>Ramp bug: only a workaround in AMX Mod X.</strong> The cause is inside the game's movement code, which AMXX can't change. A plugin could spot the symptom afterwards (a fast slide suddenly at zero speed with nothing blocking) and give the speed back, but the player still loses that moment. The real fix needs a metamod plugin.</li>
+      <li><strong>Corners: no.</strong> Same place in the movement code, and from outside you can't tell a real corner stop from a harsh one.</li>
+      <li>Either way, players' PCs still predict the original movement, so you'd see one small correction when a fix kicks in.</li>
+    </ul>
+
+    <h2 id="walls"><span class="num">2</span>Getting stuck on walls</h2>
+    <h3>Frozen, then snapped back</h3>
+    <p>A blast, a lift, a door or a teleporter can leave your box slightly inside a wall. The server then skips your movement entirely. It tries one tiny shove every 0.05 s, and the first 27 of those are too small to be used, so it can take over a second. Your own game searches every nearby free spot at once, so on your screen you walk free, then the server pulls you back.</p>
+    <p><strong>Fix:</strong> when you're stuck, the server searches all the nearby free spots straight away too, the same way your game does. Both then agree, so no freeze and no snap-back.</p>
+    <p><span class="status s-done">Best as metamod (AMX Mod X can too)</span></p>
+    <h3>Stopping dead in corners</h3>
+    <p>When one move hits three surfaces at once (two walls, or a wall and a slope), the movement code gives up and sets your speed to zero. That's intended, but harsh.</p>
+    <p><strong>Fix (optional):</strong> instead of stopping, keep the part of your speed that slides along the best of those surfaces. It changes how corners feel, so it would be off by default and only switched on if players vote for it.</p>
+    <p><span class="status s-done">Metamod only</span></p>
+    <h3>Catching on certain map edges</h3>
+    <p>Some snags are in the map itself: how its collision shapes were compiled. That's fixed per map, by recompiling it or adding invisible clip brushes over the bad edge.</p>
+    <p><span class="status s-todo">Not a plugin job</span></p>
+
+    <h2 id="rampbug"><span class="num">3</span>The ramp bug (dead stops)</h2>
+    <p>The slide code keeps a list of the surfaces it bumps into during a move, but never checks for repeats. With tiny moves (high fps) it can bump the <em>same</em> slope twice. Two identical surfaces then count as a "corner", and the direction along that corner is zero, so your speed becomes zero: the dead stop.</p>
+    <p><strong>Fix:</strong> ignore a surface that's already in the list. A plain slope is then never mistaken for a corner. Nothing else about movement changes.</p>
+    <p><span class="status s-done">Metamod (AMX Mod X: workaround only)</span></p>
+
+    <h2 id="rampfps"><span class="num">4</span>Ramp slides changing with fps</h2>
+    <p>Whether you touch the floor for one frame before a ramp decides how much speed you keep (all of it, or only part when you hit the slope in the air), and where your frames fall depends on your fps. That's how the movement responds to frame timing, not a bug.</p>
+    <p>Changing it would alter every ramp slide, and because your own game predicts your movement with the original rules, a server-only change would correct you on every ramp. It would need a change on players' PCs too, and the community's agreement. For now, <code>fps_max 100</code> gives the classic behaviour.</p>
+    <p><span class="status s-todo">Neither plugin type alone</span></p>
+
+    <h2 id="players"><span class="num">5</span>Getting stuck on players</h2>
+    <p>The server checks your movement against where other players were on <em>your</em> screen (lag compensation), so two players can end up overlapping. The freeze that follows is the same as with walls, so instant unstick fixes it. The overlap itself happens inside the engine and would need an engine change (possibly with ReHLDS later). Until then: <strong>hold jump, duck or fire</strong> when stuck in a player, and the server searches for a free spot at once.</p>
+
+    <h2 id="how"><span class="num">6</span>How the fixes would work</h2>
+    <ul>
+      <li>One server plugin (metamod), next to the TFC Fixes plugin the OTFC servers already run, with each fix switchable on its own.</li>
+      <li>It runs the game's movement step using the version Valve published in its Half-Life SDK for mod makers, with the fixes added.</li>
+      <li>Your PC still predicts your movement the original way. So at the moments a fix kicks in (where you'd have frozen or stopped dead), you'd see one small correction instead. Everywhere else, nothing changes.</li>
+    </ul>
+
+    <h2 id="proof"><span class="num">7</span>How we'd prove them</h2>
+    <ol class="steps">
+      <li>On our test rig, which runs the real game and engine: the ramp-slide runs that stopped dead at 1000 fps should carry on, and every other result should stay exactly the same.</li>
+      <li>Stuck tests on the rig: a player pushed into a wall or another player should be freed within one move.</li>
+      <li>A test night on the EU pickup server with the fixes on, then a vote on the corner option.</li>
+    </ol>
+    <div class="note"><p>Status: the ramp-bug fix is built, tested and running on all three OTFC servers: <a href="/fixes" style="color:#ff9d3d">OTFC Movement Fixes</a>. Instant unstick is next.</p></div>
+  </div>
+</div>

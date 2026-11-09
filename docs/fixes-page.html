@@ -1,0 +1,133 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv .tl { margin: 0.6rem 0 1.4rem; }
+  .inv .tl .row { display: flex; gap: 2px; margin: 0.25rem 0; align-items: center; }
+  .inv .tl .lab { width: 7.5rem; flex: none; font-size: 0.8rem; color: #8b93a8; }
+  .inv .tl .seg { height: 1.5rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #0d0f16; }
+  .inv .tl .one { background: #6fdc8c; }
+  .inv .tl .two { background: #ff9d3d; }
+  .inv .tl .three { background: #ff7a6b; }
+  .inv .tl .even { background: #7aa7ff; }
+  .inv .steps { counter-reset: st; list-style: none; padding-left: 0; }
+  .inv .steps li { counter-increment: st; position: relative; padding-left: 2.4rem; margin: 0.7rem 0; }
+  .inv .steps li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: #ff9d3d22; border: 1px solid #ff9d3d66; color: #ff9d3d; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+  .inv .flow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0; font-size: 0.88rem; }
+  .inv .flow .box { background: #ffffff0a; border: 1px solid #ffffff1a; border-radius: 10px; padding: 0.5rem 0.8rem; }
+  .inv .flow .box.seen { border-color: #6fdc8c66; }
+  .inv .flow .box.unseen { border-color: #ff7a6b66; }
+  .inv .flow .arr { color: #8b93a8; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC &middot; server fixes</span>
+    <h1>TFC server fixes</h1>
+    <p class="sub">The plugins the OTFC servers run to fix Team Fortress Classic bugs, with downloads for your own server.</p>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="/investigation">The investigation &rarr;</a>
+      <a class="btn btn-ghost" href="/investigation/fixing-movement">Fixing movement &rarr;</a>
+    </div>
+  </div>
+  <div class="inv">
+    <h2 id="running"><span class="num">1</span>What the OTFC servers run</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Plugin</th><th>What it fixes</th><th>On OTFC</th></tr>
+      <tr><td><strong>OTFC Movement Fixes</strong> 0.3<br><span style="color:#8b93a8">metamod, ours</span></td><td>The ramp bug: dead stops when sliding up ramps at high fps</td><td><span class="status s-done">All 3 servers</span></td></tr>
+      <tr><td><strong>OTFC Sentry Options</strong> 0.1<br><span style="color:#8b93a8">metamod, ours</span></td><td>Optional improved sentry targeting (off by default)</td><td><span class="status s-vote">Installed, mode 0 (classic)</span></td></tr>
+      <tr><td><strong>TFC Fixes</strong> 1.2.0<br><span style="color:#8b93a8">metamod, by lazydaydreamer12</span></td><td>Grenade jumps at any tick rate, MIRV server crash, teleporter bugs, flags in walls, push pads, death bug and more</td><td><span class="status s-done">All 3 servers</span></td></tr>
+    </table></div></div>
+    <p>Both are metamod plugins and run side by side; they don't touch the same parts of the game. TFC Fixes replaces the old AMX "Bug Fixes TFC 1.4", which should be removed when you install it.</p>
+
+    <h2 id="movefix"><span class="num">2</span>OTFC Movement Fixes</h2>
+    <p>Runs player movement with Valve's published Half-Life SDK movement code (with the legacy TFC server's behaviour), so bugs inside it can be fixed. With its fixes off it moves players <strong>exactly</strong> like the game: every frame of our movement tests is bit-for-bit identical to the original TFC.</p>
+    <div class="cta-row" style="justify-content:flex-start;margin:1rem 0">
+      <a class="btn btn-ghost" href="/static/fixes/otfc-movefix-0.3.zip">Download 0.3 (Linux, with source) &darr;</a>
+    </div>
+    <h3>Fixes</h3>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Fix</th><th>Setting</th><th>Status</th></tr>
+      <tr><td><strong>Ramp bug</strong>: at high fps the movement code could take a slope it hit twice for a corner and zero your speed. Now you keep sliding</td><td><code>otfc_mf_rampfix 1</code></td><td><span class="status s-done">0.1</span></td></tr>
+      <tr><td><strong>Ramp-save message</strong>: a chat line when the fix saves someone's slide, with their name and the speed they kept (one a second per player at most)</td><td><code>otfc_mf_announce 1</code> (off by default)</td><td><span class="status s-done">0.3</span></td></tr>
+      <tr><td><strong>Instant unstick</strong>: free players stuck in walls or other players straight away</td><td></td><td><span class="status s-todo">Next</span></td></tr>
+      <tr><td><strong>Corners slide</strong> instead of stopping you dead (optional, off by default)</td><td></td><td><span class="status s-vote">Planned, vote</span></td></tr>
+    </table></div></div>
+    <h3>Tested</h3>
+    <ul>
+      <li><strong>Same as the game with fixes off:</strong> all 3,030 frames of our movement scenarios (walking, crouching, falling, ladders, ramps, stairs, water, bunny hops, different frame rates) identical to the original.</li>
+      <li><strong>Ramp fix on, real engine:</strong> the dead stops at 1000 fps are gone (e.g. 40&deg; ramp at 600 u/s: 29 &rarr; 254 units up the ramp, in line with 500 fps), every other slide unchanged.</li>
+      <li><strong>On the OTFC servers:</strong> loaded alongside TFC Fixes and AMX Mod X; tens of thousands of bot moves a minute run through it.</li>
+    </ul>
+    <h3>Install</h3>
+    <ol class="steps">
+      <li>Copy <code>addons/otfc_movefix/otfc_movefix_mm_i386.so</code> from the zip to <code>tfc/addons/otfc_movefix/</code>.</li>
+      <li>Add <code>linux addons/otfc_movefix/otfc_movefix_mm_i386.so</code> to <code>tfc/addons/metamod/plugins.ini</code>.</li>
+      <li>Change map. Type <code>otfc_mf</code> in the server console: it shows the plugin on, how many moves it has run and how often the ramp fix stepped in.</li>
+    </ol>
+    <p>Settings: <code>otfc_mf_enable 0</code> hands movement back to the game; <code>otfc_mf_rampfix 0</code> turns the ramp fix off; <code>otfc_mf_announce 1</code> turns on the chat message when it saves a slide. Players' own games still predict the original movement, so when the fix steps in they may see one small correction at that moment.</p>
+    <p style="color:#8b93a8;font-size:0.9rem">Linux servers only for now. Source included: the plugin is MIT licensed; the movement code is from Valve's Half-Life SDK under its own licence (included), with every change marked.</p>
+
+    <h2 id="sentry"><span class="num">3</span>OTFC Sentry Options</h2>
+    <p>One setting for how sentry guns pick targets. Mode 0 is the classic TFC sentry, untouched. Mode 1 targets the way Fortress United's sentry does.</p>
+    <div class="cta-row" style="justify-content:flex-start;margin:1rem 0">
+      <a class="btn btn-ghost" href="/static/fixes/otfc-sentry-0.1.zip">Download 0.1 (Linux, with source) &darr;</a>
+    </div>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th><code>otfc_sg_mode</code></th><th>Picks a target</th><th>Sees you if</th></tr>
+      <tr><td><strong>0</strong> (default)</td><td>The first valid enemy by <em>player slot</em>, wherever they are</td><td>A line from its eye to <em>your eyes</em> is clear</td></tr>
+      <tr><td><strong>1</strong></td><td>The <strong>nearest</strong> valid enemy</td><td>Your eyes <strong>or</strong> your body can be seen</td></tr>
+    </table></div></div>
+    <p>Both modes keep the classic range (all round under 500 units, inside its view cone from 500 to 1000), turning speed, firing and damage. The mode can be changed any time and applies on the next server frame; <code>otfc_sg</code> in the server console shows the mode and how many targets mode 1 has picked.</p>
+    <h3>Tested</h3>
+    <ul>
+      <li>On a local server with bot engineers and attackers: switched to mode 1 mid-game, sentries locked on with it, switched back to classic cleanly.</li>
+      <li>Mode 0 leaves the game's own sentry code exactly as it is.</li>
+    </ul>
+    <h3>Install</h3>
+    <ol class="steps">
+      <li>Copy <code>addons/otfc_sentry/otfc_sentry_mm_i386.so</code> from the zip to <code>tfc/addons/otfc_sentry/</code>.</li>
+      <li>Add <code>linux addons/otfc_sentry/otfc_sentry_mm_i386.so</code> to <code>tfc/addons/metamod/plugins.ini</code>.</li>
+      <li>Change map, then set <code>otfc_sg_mode 1</code> to try the improved targeting.</li>
+    </ol>
+    <p style="color:#8b93a8;font-size:0.9rem">Linux, legacy <code>tfc.so</code> only (the 25th Anniversary build compiles the sentry's targeting into other code; the plugin then stays idle and says so). MIT licensed, source included.</p>
+
+    <h2 id="tfcfixes"><span class="num">4</span>TFC Fixes</h2>
+    <p>A metamod plugin by lazydaydreamer12 that fixes many bugs in TFC's game code, each switchable in its <code>tfc_fixes.ini</code>; <code>tfx</code> in the server console shows which fixes stepped in. Get it from its author:</p>
+    <div class="cta-row" style="justify-content:flex-start;margin:1rem 0">
+      <a class="btn btn-ghost" href="https://github.com/lazydaydreamer12-collab/tfc_fixes_mm/releases/tag/v1.2.0" rel="noopener">TFC Fixes 1.2.0 on GitHub &rarr;</a>
+    </div>
+    <p>OTFC runs it with the default settings (push pads launch the same at any tick; the optional edge-conc fix is off). The investigation's <a href="/investigation/plugins" style="color:#ff9d3d">metamod vs AMX Mod X</a> page explains why these fixes are metamod plugins.</p>
+
+    <div class="note"><p>Found a bug, or running these on your own server? Tell us in the OTFC Discord.</p></div>
+  </div>
+</div>

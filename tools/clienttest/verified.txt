@@ -1,0 +1,2 @@
+# Real-engine checks of our client.so (tools/clienttest); any line means the in-game test passed.
+played on our server with our client.so, no errors (2026-10-18, log 76)

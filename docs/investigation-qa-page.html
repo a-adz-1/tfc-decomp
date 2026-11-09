@@ -1,0 +1,64 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv .qa { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1rem 1.3rem; margin: 0.9rem 0; }
+  .inv .qa h3 { margin: 0 0 0.4rem; color: #fff; font-size: 1.05rem; }
+  .inv .qa h3::before { content: "Q  "; color: #ff9d3d; font-weight: 800; }
+  .inv .qa p { margin: 0 0 0.5rem; }
+  .inv .qa a.more { color: #ff9d3d; font-weight: 700; text-decoration: none; font-size: 0.92rem; }
+  .inv .qa a.more:hover { text-decoration: underline; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC investigation &middot; Q&amp;A</span>
+    <h1>Questions &amp; answers</h1>
+    <p class="sub">Short answers to the questions players ask most. Follow the links for the full detail.</p>
+    <div class="cta-row"><a class="btn btn-ghost" href="/investigation">&larr; Back to the investigation</a></div>
+  </div>
+  <div class="inv">
+    <div class="qa"><h3>Why does <code>voice_enable 1</code> lag me when people talk?</h3><p>Their voice is added to your update packets, so on a low <code>rate</code> the server holds back (chokes) your updates while they talk. Watch choke in <code>net_graph 3</code> and try <code>rate 100000</code>.</p><a class="more" href="/investigation/voice">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>Why am I smooth but everyone else looks jittery?</h3><p>You're drawn from your own prediction; everyone else is timed by a game clock that's constantly nudged by up to 7.5 ms per frame to keep up with the server.</p><a class="more" href="/investigation/choppiness#clock">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>My frame-time graphs are perfect. Why does it still feel choppy?</h3><p>Your PC draws frames evenly, but 100 fps on a 144 Hz screen can't line up without G-Sync/FreeSync, and vsync is on by default in the 25th client.</p><a class="more" href="/investigation/choppiness">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>Why do I get stuck on teammates, then snap back?</h3><p>The server checks you against where others were on your screen, so players can end up overlapping; hold jump, duck or fire to get freed straight away.</p><a class="more" href="/investigation#stuck">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>Why did the sentry shoot him and not me?</h3><p>Sentries pick the first valid player by player slot, not the nearest, and keep that target. It's been that way since 1999.</p><a class="more" href="/investigation#sentry">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>Why do my ramp slides sometimes fail, or stop dead?</h3><p>Your fps decides whether you touch the floor for a frame before the ramp, which changes your speed; at very high fps the ramp bug can zero it. <code>fps_max 100</code> gives the classic feel.</p><a class="more" href="/investigation#ramps">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>Can the ramp-slide problems be fixed?</h3><p>The dead stops (the ramp bug) can, with a one-line server fix. Slides changing with fps can't be fixed from the server alone without changing every slide.</p><a class="more" href="/investigation/fixing-movement#rampbug">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>How do we fix getting stuck on walls?</h3><p>Make the server free stuck players straight away (it currently waits up to a second), fix the ramp bug, and optionally let corners slide instead of stopping you dead.</p><a class="more" href="/investigation/fixing-movement#walls">Full explanation &rarr;</a></div>
+    <div class="qa"><h3>What settings should I use?</h3><p><code>cl_updaterate 102</code>, <code>cl_cmdrate</code> above your fps, <code>rate 100000</code>, <code>ex_interp 0.02</code> or more, <code>fps_max 100</code>, <code>gl_vsync 0</code>, true fullscreen.</p><a class="more" href="/investigation#players">Why each one &rarr;</a></div>
+    <div class="qa"><h3>Does the 25th Anniversary client hurt me on OTFC?</h3><p>No: netcode and movement are the same. Turn vsync off; on widescreen it also shows you more to the sides than the old client.</p><a class="more" href="/investigation#versions">Full comparison &rarr;</a></div>
+    <div class="qa"><h3>Is ReHLDS better than Valve's server?</h3><p>Maybe; it has many fixes, but we haven't checked that it sends updates the same way, so it's still being tested.</p><a class="more" href="/investigation#testing">Testing plan &rarr;</a></div>
+    <div class="qa"><h3>Was the game smoother back in the day?</h3><p>Same netcode since 2000; what changed is the hardware: CRTs at matching refresh rates, true fullscreen, no vsync by default.</p><a class="more" href="/investigation/choppiness#then">Full explanation &rarr;</a></div>
+    <div class="note"><p>Got a question that isn't here? Ask in the OTFC Discord and we'll add it.</p></div>
+  </div>
+</div>

@@ -1,0 +1,2 @@
+#!/bin/sh
+exec python3 -I "$(dirname "$0")/sync_methods.py" "$(dirname "$0")/../bin/legacy/tfc.so" "$@"

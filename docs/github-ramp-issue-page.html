@@ -1,0 +1,183 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv h2 .num::after { content: "."; }
+  .inv pre { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1rem 1.2rem; overflow: auto; font-size: 0.85rem; line-height: 1.5; color: #e8eaf0; }
+  .inv pre code { background: none; border: 0; padding: 0; color: inherit; font-size: inherit; }
+  .inv .title { background: #ffffff08; border: 1px solid #ff9d3d66; border-radius: 14px; padding: 0.9rem 1.2rem; font-weight: 700; color: #fff; }
+  .inv ol li, .inv ul li { margin: 0.35rem 0; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC &middot; draft for review</span>
+    <h1>Ramp bug report for Valve</h1>
+    <p class="sub">Draft of the GitHub issue for ValveSoftware/halflife asking for the ramp-bug fix in the game itself. Not posted yet; the raw text for posting is at the bottom.</p>
+    <div class="cta-row">
+      <a class="btn btn-ghost" href="/fixes">Server fixes &rarr;</a>
+      <a class="btn btn-ghost" href="#raw">Raw text &rarr;</a>
+    </div>
+  </div>
+  <div class="inv">
+    <h2><span class="num">1</span>Title</h2>
+    <p class="title">Dead stop while sliding along a slope at high fps (PM_FlyMove treats a repeat hit of the same plane as a corner) &mdash; fix included</p>
+    <p><strong>Game:</strong> Team Fortress Classic, reproduced with both the pre-25th and the 25th Anniversary <code>tfc.so</code>. The code is in <code>pm_shared/pm_shared.c</code>, so every mod built on it is affected.</p>
+
+    <h2><span class="num">2</span>What happens</h2>
+    <p>Sliding up or along a slope at speed (conc jump, bunnyhop, rocket jump), the player sometimes stops dead a few units onto the slope: velocity set to 0 and the player counted as standing on it. It is intermittent, which makes it worse: the same jump works nine times and fails the tenth, so a ramp can never be trusted. It happens far more at high frame rates. At 100 fps the same approach slides normally.</p>
+    <p>Players have called this the "ramp bug" for years; it is the same stop known from surf maps.</p>
+
+    <h2><span class="num">3</span>Reproduce</h2>
+    <ol>
+      <li>TFC, a map with a long up-ramp: shutdown2's main ramp, or the ramps on phantom_infinity.</li>
+      <li><code>fps_max 360</code> (<code>fps_override 1</code> on the pre-25th client). Players see it at 240 and 360 fps in normal play; the measurements below used 1000 fps, where it is near-certain.</li>
+      <li>Run, conc or bhop onto the ramp at 600 u/s or more.</li>
+      <li>The player stops dead shortly after touching the slope. Repeat at <code>fps_max 100</code>: they slide up as expected.</li>
+    </ol>
+    <p>Measured with a scripted client against a dedicated server (same ramp, 600 u/s arrival, no keys held, usercmd lengths as a real client sends them at that fps):</p>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Ramp</th><th>100 fps</th><th>250 fps</th><th>500 fps</th><th>1000 fps</th></tr>
+      <tr><td>40°</td><td>slid 237 units</td><td>248</td><td>252</td><td><strong>stopped after 29 units (0.08 s)</strong></td></tr>
+      <tr><td>30°, 1200 u/s</td><td>630</td><td>971</td><td>985</td><td><strong>348</strong></td></tr>
+    </table></div></div>
+    <p>The 25th Anniversary <code>tfc.so</code> gives the same numbers to within two units.</p>
+
+    <h2><span class="num">4</span>Cause</h2>
+    <p><code>PM_FlyMove</code> collects the planes hit during one move in <code>planes[]</code>. At a tiny frametime the player trace, which keeps the player 1/32 unit off surfaces, reports the slope the player is already sliding on again, at <code>fraction == 0</code>. The code adds it as a second plane although it is the same plane. From there both exits are a dead stop:</p>
+    <ul>
+      <li>the two-plane "crease" maths takes the cross product of two near-identical normals, which is a near-zero vector, so the velocity becomes near zero; or</li>
+      <li>the clip loop accepts the clipped velocity, the move covers no distance, and <code>allFraction == 0</code> zeroes the velocity ("Don't stick").</li>
+    </ul>
+
+    <h2><span class="num">5</span>Fix</h2>
+    <p>Before adding a plane, check whether it is (nearly) the one already in the list this move. If so, don't add it: nudge the velocity off the plane by its normal and carry on. In <code>PM_FlyMove</code>, directly after the <code>MAX_CLIP_PLANES</code> check (upstream <code>pm_shared.c</code> around line 884):</p>
+<pre><code>
+		// A plane we already hit this move is the contact margin on a slope,
+		// not a corner: counting it twice zeroes the velocity (the &quot;ramp bug&quot;).
+		// Nudge off the plane and keep sliding.
+		for ( i = 0; i &lt; numplanes; i++ )
+		{
+			if ( DotProduct( trace.plane.normal, planes[i] ) &gt; 0.99 )
+				break;
+		}
+		if ( i &lt; numplanes )
+		{
+			VectorAdd( trace.plane.normal, pmove-&gt;velocity, pmove-&gt;velocity );
+			VectorCopy( pmove-&gt;velocity, original_velocity );
+			continue;
+		}
+
+		// Set up next clipping plane
+		VectorCopy (trace.plane.normal, planes[numplanes]);
+		numplanes++;
+</code></pre>
+    <p>It has to be the repeat hit itself that is handled, not only the crease branch: a version that stepped in only there still stopped through the <code>allFraction == 0</code> path.</p>
+
+    <h2><span class="num">6</span>Verification</h2>
+    <ul>
+      <li>Movement test harness (scripted scenarios through the real <code>PM_Move</code>): walking, stairs, crouching, ladders, water, bhop and ramp scenarios produce bit-identical traces with and without the change; only the dead-stop scenarios differ, and there the player keeps sliding.</li>
+      <li>On a dedicated server with the change applied through a Metamod plugin, the 1000 fps dead stops are gone. It has been running on public TFC servers.</li>
+    </ul>
+    <p>Because movement is predicted by the client, a server-only fix leaves the client predicting the stop for one round trip before it is corrected. The fix only becomes seamless when <code>client.dll</code> has it too, which is why we're reporting it here rather than keeping it server-side.</p>
+
+    <h2 id="raw"><span class="num">7</span>Raw text for posting</h2>
+    <p class="lead">Markdown as it would go into the GitHub issue.</p>
+<pre><code>**Title:** Dead stop while sliding along a slope at high fps (PM_FlyMove treats a repeat hit of the same plane as a corner) — fix included
+
+**Game:** Team Fortress Classic, reproduced with both the pre-25th and the 25th Anniversary `tfc.so`. The code is in `pm_shared/pm_shared.c`, so every mod built on it is affected.
+
+### What happens
+
+Sliding up or along a slope at speed (conc jump, bunnyhop, rocket jump), the player sometimes stops dead a few units onto the slope: velocity set to 0 and the player counted as standing on it. It is intermittent, which makes it worse: the same jump works nine times and fails the tenth, so a ramp can never be trusted. It happens far more at high frame rates. At 100 fps the same approach slides normally.
+
+Players have called this the &quot;ramp bug&quot; for years; it is the same stop known from surf maps.
+
+### Reproduce
+
+1. TFC, a map with a long up-ramp: shutdown2&#x27;s main ramp, or the ramps on phantom_infinity.
+2. `fps_max 360` (`fps_override 1` on the pre-25th client). Players see it at 240 and 360 fps in normal play; the measurements below used 1000 fps, where it is near-certain.
+3. Run, conc or bhop onto the ramp at 600 u/s or more.
+4. The player stops dead shortly after touching the slope. Repeat at `fps_max 100`: they slide up as expected.
+
+Measured with a scripted client against a dedicated server (same ramp, 600 u/s arrival, no keys held, usercmd lengths as a real client sends them at that fps):
+
+| Ramp | 100 fps | 250 fps | 500 fps | 1000 fps |
+|---|---|---|---|---|
+| 40° | slid 237 units | 248 | 252 | **stopped after 29 units (0.08 s)** |
+| 30°, 1200 u/s | 630 | 971 | 985 | **348** |
+
+The 25th Anniversary `tfc.so` gives the same numbers to within two units.
+
+### Cause
+
+`PM_FlyMove` collects the planes hit during one move in `planes[]`. At a tiny frametime the player trace, which keeps the player 1/32 unit off surfaces, reports the slope the player is already sliding on again, at `fraction == 0`. The code adds it as a second plane although it is the same plane. From there both exits are a dead stop:
+
+- the two-plane &quot;crease&quot; maths takes the cross product of two near-identical normals, which is a near-zero vector, so the velocity becomes near zero; or
+- the clip loop accepts the clipped velocity, the move covers no distance, and `allFraction == 0` zeroes the velocity (&quot;Don&#x27;t stick&quot;).
+
+### Fix
+
+Before adding a plane, check whether it is (nearly) the one already in the list this move. If so, don&#x27;t add it: nudge the velocity off the plane by its normal and carry on. In `PM_FlyMove`, directly after the `MAX_CLIP_PLANES` check (upstream `pm_shared.c` around line 884):
+
+```c
+		// A plane we already hit this move is the contact margin on a slope,
+		// not a corner: counting it twice zeroes the velocity (the &quot;ramp bug&quot;).
+		// Nudge off the plane and keep sliding.
+		for ( i = 0; i &lt; numplanes; i++ )
+		{
+			if ( DotProduct( trace.plane.normal, planes[i] ) &gt; 0.99 )
+				break;
+		}
+		if ( i &lt; numplanes )
+		{
+			VectorAdd( trace.plane.normal, pmove-&gt;velocity, pmove-&gt;velocity );
+			VectorCopy( pmove-&gt;velocity, original_velocity );
+			continue;
+		}
+
+		// Set up next clipping plane
+		VectorCopy (trace.plane.normal, planes[numplanes]);
+		numplanes++;
+```
+
+It has to be the repeat hit itself that is handled, not only the crease branch: a version that stepped in only there still stopped through the `allFraction == 0` path.
+
+### Verification
+
+- Movement test harness (scripted scenarios through the real `PM_Move`): walking, stairs, crouching, ladders, water, bhop and ramp scenarios produce bit-identical traces with and without the change; only the dead-stop scenarios differ, and there the player keeps sliding.
+- On a dedicated server with the change applied through a Metamod plugin, the 1000 fps dead stops are gone. It has been running on public TFC servers.
+
+Because movement is predicted by the client, a server-only fix leaves the client predicting the stop for one round trip before it is corrected. The fix only becomes seamless when `client.dll` has it too, which is why we&#x27;re reporting it here rather than keeping it server-side.
+</code></pre>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+SPECIAL NOTE: This is for server owners only. The FPS discussed below has nothing to do with a gamers personal fps.
+
+
+After counting individual packets being sent from the server to the game using wireshark, I discovered a critical issue that was made worse with the 25th Anniversary update of Team Fortress Classic (This gets hurt badly from the anniversary update too "Lower Input Latency" feature[gl_lowlatency 1], in addition to the updated Engine Modernizations).
+
+THE SERVER ISSUE (affecting Drippys, OST, 1999, EVIL & other servers)
+
+The game is designed to send a beautiful stream of incoming packets to gamers exactly every 10ms. This is 100fps and also 100 packets per second incoming to each gamer (when a gamer sets cl_update 100). However instead gamers are receiving only 66 packets per second (59-80 randomly) & even worse these received game packets are timed terribly when looking at wireshark! One tenth of a second you might get 10 packets (perfect!) while another tenth of a second might get only 4-5 packets (concs would've likely failed). This results in bad hitboxes which come and go randomly while playing along with failing concs.
+
+THE PROBLEM
+An Operating System has a timer resolution which breaks down chunks of time at a default resolution of only 15.6ms which is the case for many TFC servers currently. Ideally changing this down to 0.5ms or 1ms is HIGHLY RECOMMENDED, especially on a gaming server. The GoldSrc's engine frame calculation rounds to this nearest sleep interval. The very relaxed 15.6ms set in the Operating System is great for a computerlab that idles often to save electricity but this is interfering with the game server's ability to send/receive packets at a correct pace.
+
+THE FIX: If the server is on Linux
+Launch the server with the -pingboost 2 or pingboost 3 parameter. This alters the server socket loop to use block interrupts rather than sleep timers, helping hit a crisp 100 fps/ 100 network ticks easily (or 1000 easily too). the hosting provider might be running a low-frequency virtualization kernal (100hz or 250hz). For the best precision, the host kernel should ideally be compiled with CONFIG_HZ=1000
+
+THE FIX: If the server is on Windows
+Make sure a high-resolution media timer is active on the server, there are many to pick from. On my gaming computer I personally use Intelligent Standby List Cleaner because the author Wagnard also makes other trustworthy programs & won't have spyware. I force mine down to 0.5ms while gaming, it's more reliable then the oldschool trick of leaving a muted instance of Windows Media Player running forcing a global 1ms system timer.
+
+OR FIX BY USING A PLUGIN
+If your rented server doesn't allow a launch parameter or 3rd party software to run in the background, then you could use a plugin. These are a server-side fix for restricted Windows game rentals if you cannot change command-line parameters, boot scripts, or underlying OS software.
+
+MMTimer (Metamod Timer Plugin): Lightweight Metamod binary (mmtimer.dll or mmtimer.so) that calls the Windows multimedia timer APIs directly from within the game engine context. It forces a rock-solid 1000 FPS server ticrate even if the provider locks down terminal controls. Installation: Drop the binary into your addons folder and declare it inside your config file: addons/metamod/plugins.ini
+
+AMX Mod X Scripting Solution: If the server owner only has access to AMX Mod X plugins (.amxx) through an automated panel installer, you can force the engine to keep its loop running consistently through an active server thinker module.
+
+1. Install a basic plugin that runs a global set_task() loop cycling at a rapid decimal interval.
+
+2. Ensure the following configurations are added natively inside the server's server.cfg to keep the networking pipelines clear:
+sys_ticrate 1000
+sv_maxupdaterate 102
+
+There's probably other plugin solutions too but google is your friend here.
+
+**IMPORTANT TOO**: Every server should always use sv_maxupdaterate 102
+
+This overrides a gamer's cl_updaterate silently allowing upto the value you enter. The engine has a max of being able to receive 102 packets per second. So if a server only has this set to 50 then gamers can never get more than 50 update packets per second, even if their cl_updaterate is 102. Never set this to 0!	  
+Reply to message
+[IOD]Snips
+Super Regular
+Speed Sniping
+Master
+
+P: 	09/25/2026 18:00 EST
+   	I would also highly recommend changing the server from 100 fps "sys_ticrate 100" to a new 1000 fps "sys_ticrate 1000". Use "rcon stats" to get a snapshot of the current server's fps. Most importantly if doing so you must apply the fix below solving the issue of hand held grenade jump failures when they pop straight up. At sys_ticrate 100 the server is sampling the speed & direction of a player over the course of 10ms the moment the handheld grenade goes off forcing them to go horizontally quickly. However at sys_ticrate 1000 (without the fix below) the server is sampling this at only 1ms! This is why you're much more likely to pop straight up unless you timed it perfect in that 1ms moment. The fix below allows hh gren jumps to correctly go forward while at any sys_ticrate.
+
+THE FIX
+Get the plugin called TFC Bug Fix 1.4 and I think you can enable or disable any of the fixes included incase you don't want some. But definitely turn this on below from that plugin:
+
+#17: Normal grenade jumps will always push a player forwards, even while the server runs at 1000 FPS. (sys_ticrate 1000.0)
+
+https://forums.alliedmods.net/showthread.php?t=333746
+
+On 1999 sometimes I'll set the "sys_ticrate 1000" but only if no bots are playing, otherwise the bots move/think slower and their gravity gets lower but players are unaffected by that. I was unsure if it was too high cpu usage but now I'm thinking it's due to the 15.6ms timer resolution issue, as exactly only 660fps were being shown instead of the expected 1000fps.
+
+Concing, ramp sliding, air gliding, bhoping should all be unaffected by sys_ticrate 1000 but more observation should be done, especially if a server has bots running. I've watched Zeus and others hit ramps & bhop fine while the server was at 1000.	  
+Reply to message
+[IOD]Snips
+Super Regular
+Speed Sniping
+Master
+
+P: 	09/25/2026 18:00 EST
+   	TLDR SUMMARY
+1. Make sure your server has this set: sv_maxupdaterate 102
+
+2. Either change the server's timer resolution if linux/windows, or use a plugin to do it.
+This has no downside other then more electricity usage by the server. Servers running 24/7 will use about 5-15% more electricity if mostly empty without bots (due to more waking up cycles) & only 1-5% more if heavily populated with players. Zero downsides in-game, better hitboxes, better pings, identical physics, no more conc failures.
+I'm assuming this alone will force servers to be able to send more than ~66% of expected packets per second to gamers to the 100% amount finally.
+
+3. Suggested to apply but is more optional (might have potential downsides with bots) is applying sys_ticrate 1000 and make sure ramp surfing/air gliding/bhoping physics are still good with the elite gamers. Only apply if the hh gren jump fix has been applied! This alone I've confirmed does solve the 66 packets per second turning into 95-100 being received to gamers but fixing the 15.6ms instead I'd expect would also solve that.
+
+BEFORE & AFTER
+Before #1, #2, #3 (current situation): The engine calculates physics at 100hz (sys_ticrate 100) & then takes gamers packets (incoming & outgoing) and processes those at only 64hz (currently every 15.6ms). Due to the realtime nature of UDP packets flood in at 10ms or 20ms randomly but due to rounding sometimes streaks of 6ms or 24-28ms packets get sent to gamers. Gamers are supposed to be getting an updated packet exactly every single 10ms but can't yet!
+
+After #1, #2: The engine calculates physics at 100hz & sends packets upto 102 times per second (instead of 59-80 times) to players when gamers use cl_updaterate 102.
+After #1, #2, #3: The engine calculates physics at 1000hz. In addition since the OS is now 1000hz with 1ms, the game + system timer can both see 1ms as the smallest unit of time! So no more rounding issues when gamers use cl_cmdrate 101-1000 and very frequent packets are being sent to the server, further helping with hitboxes & conc/hh gren accuracy.
+
+Pings will drop 10-20ms lower for players with fix #3. Unclear if #2 would do that too, #2 + #3 together would likely lower them more, even closer to the net_graph value.

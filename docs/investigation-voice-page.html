@@ -1,0 +1,111 @@
+<style>
+  .inv { max-width: 860px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+  .inv h2 { font-size: 1.6rem; margin: 3.2rem 0 0.4rem; color: #fff; scroll-margin-top: 1.5rem; }
+  .inv h2 .num { color: #ff9d3d; margin-right: 0.5rem; }
+  .inv h3 { font-size: 1.1rem; margin: 1.8rem 0 0.4rem; color: #ffd2a6; }
+  .inv p, .inv li { color: #c9cedb; }
+  .inv strong { color: #fff; }
+  .inv code { background: #ffffff12; border: 1px solid #ffffff1a; border-radius: 6px; padding: 0.05rem 0.4rem; font-size: 0.88em; color: #ffd2a6; }
+  .inv .lead { font-size: 1.08rem; color: #9aa2b8; }
+  .inv .toc { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.2rem 1.6rem; margin: 1.5rem 0 0; }
+  .inv .toc ol { margin: 0; padding-left: 1.3rem; columns: 2; column-gap: 2.5rem; }
+  .inv .toc a { color: #e8eaf0; text-decoration: none; }
+  .inv .toc a:hover { color: #ff9d3d; }
+  .inv .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+  .inv .tile { background: #ffffff08; border: 1px solid #ffffff14; border-radius: 14px; padding: 1.1rem 1.2rem; }
+  .inv .tile h4 { margin: 0 0 0.4rem; color: #ff9d3d; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .inv .tile p { margin: 0; font-size: 0.95rem; }
+  .inv .card { margin: 1rem 0 1.4rem; }
+  .inv table { font-size: 0.9rem; }
+  .inv td, .inv th { padding: 0.6rem 0.9rem; vertical-align: top; }
+  .inv td { border-bottom: 1px solid #ffffff0d; color: #c9cedb; }
+  .inv .bad { color: #ff7a6b; font-weight: 700; }
+  .inv .good { color: #6fdc8c; font-weight: 700; }
+  .inv .hl { color: #ffd2a6; font-weight: 700; }
+  .inv .note { border-left: 3px solid #ff9d3d; background: #ff9d3d0d; padding: 0.8rem 1.1rem; border-radius: 0 10px 10px 0; margin: 1.2rem 0; }
+  .inv .note p { margin: 0; }
+  .inv .status { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.15rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .inv .s-done { background: #6fdc8c22; color: #6fdc8c; border: 1px solid #6fdc8c55; }
+  .inv .s-vote { background: #ff9d3d22; color: #ff9d3d; border: 1px solid #ff9d3d55; }
+  .inv .s-todo { background: #8b93a822; color: #b6bdd0; border: 1px solid #8b93a855; }
+  .inv .conclusion { background: linear-gradient(135deg, #ff9d3d14, #ffffff05); border: 1px solid #ff9d3d40; border-radius: 16px; padding: 1.4rem 1.6rem; margin-top: 1.2rem; }
+  @media (max-width: 640px) { .inv .toc ol { columns: 1; } .inv h2 { font-size: 1.35rem; } }
+</style>
+<style>
+  .inv .tl { margin: 0.6rem 0 1.4rem; }
+  .inv .tl .row { display: flex; gap: 2px; margin: 0.25rem 0; align-items: center; }
+  .inv .tl .lab { width: 7.5rem; flex: none; font-size: 0.8rem; color: #8b93a8; }
+  .inv .tl .seg { height: 1.5rem; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #0d0f16; }
+  .inv .tl .one { background: #6fdc8c; }
+  .inv .tl .two { background: #ff9d3d; }
+  .inv .tl .three { background: #ff7a6b; }
+  .inv .tl .even { background: #7aa7ff; }
+  .inv .steps { counter-reset: st; list-style: none; padding-left: 0; }
+  .inv .steps li { counter-increment: st; position: relative; padding-left: 2.4rem; margin: 0.7rem 0; }
+  .inv .steps li::before { content: counter(st); position: absolute; left: 0; top: 0.05rem; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: #ff9d3d22; border: 1px solid #ff9d3d66; color: #ff9d3d; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
+  .inv .flow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1rem 0; font-size: 0.88rem; }
+  .inv .flow .box { background: #ffffff0a; border: 1px solid #ffffff1a; border-radius: 10px; padding: 0.5rem 0.8rem; }
+  .inv .flow .box.seen { border-color: #6fdc8c66; }
+  .inv .flow .box.unseen { border-color: #ff7a6b66; }
+  .inv .flow .arr { color: #8b93a8; }
+</style>
+<div class="wrap" id="top">
+  <div class="hero" style="padding: 3.5rem 1rem 1.5rem;">
+    <span class="tag">OfficialTFC investigation &middot; deep dive</span>
+    <h1>Voice and lag</h1>
+    <p class="sub">Why turning voice on can make the game lag while other people talk, and what to do about it.</p>
+    <div class="cta-row"><a class="btn btn-ghost" href="/investigation/qa">&larr; Back to the Q&amp;A</a></div>
+  </div>
+  <div class="inv">
+    <div class="toc"><ol>
+      <li><a href="#path">What happens to someone's voice</a></li>
+      <li><a href="#choke">Cause 1: your updates get choked</a></li>
+      <li><a href="#decode">Cause 2: decoding on the main thread</a></li>
+      <li><a href="#notlag">Things that feel like lag but aren't</a></li>
+      <li><a href="#fix">What to do</a></li>
+      <li><a href="#test">How to check which it is</a></li>
+    </ol></div>
+
+    <h2 id="path"><span class="num">1</span>What happens to someone's voice</h2>
+    <ol class="steps">
+      <li>Their game records the microphone, compresses it (the OTFC servers use the Speex codec) and adds it to the commands they send the server.</li>
+      <li>The server copies it straight into the <strong>next update packet</strong> of every player who can hear them, alongside the normal game update.</li>
+      <li>Your game reads the packet, decompresses the voice on its <strong>main thread</strong> (the same loop that draws your frames) and plays it through the game's sound system.</li>
+    </ol>
+
+    <h2 id="choke"><span class="num">2</span>Cause 1: your updates get choked</h2>
+    <p>The server limits how many bytes a second it sends you to your <code>rate</code> setting. After each packet it works out when it may send the next one: <em>packet size &divide; rate</em> seconds later. Voice makes your packets bigger, so the next allowed send moves later. When it isn't allowed yet, the update due that frame is skipped (net_graph calls that <strong>choke</strong>) and the next one carries the state a little later.</p>
+    <ul>
+      <li>One talker adds a few kilobytes a second; several at once add several times that.</li>
+      <li>Normal updates at ~100 a second already use a good part of a low <code>rate</code>, so voice on top tips you over.</li>
+      <li>Result: other players move jerkily and your shots feel late for as long as people talk, then it recovers.</li>
+    </ul>
+    <p>The OTFC servers allow high rates (they cap at 100000 bytes a second when they limit you), so this is fixed on your side by raising <code>rate</code>.</p>
+
+    <h2 id="decode"><span class="num">3</span>Cause 2: decoding on the main thread</h2>
+    <p>Each incoming voice packet is decompressed immediately, inside the game's main loop, before the next frame. On a modern CPU one packet takes very little time, but it adds up with several talkers, and it lands on the same thread that's racing to start each frame on time. Slow or misbehaving sound output can make it worse. <code>voice_profile 1</code> prints how long it takes on your PC.</p>
+
+    <h2 id="notlag"><span class="num">4</span>Things that feel like lag but aren't</h2>
+    <ul>
+      <li><strong>Game sound drops when someone talks.</strong> <code>voice_overdrive 2</code> (default) lowers other sounds while voice plays, so footsteps and shots get quieter for a moment (fading back over 0.4 s). <code>voice_overdrive 1</code> turns this off.</li>
+      <li><strong>Voice starts a moment late.</strong> The game buffers a little voice before it starts playing so it doesn't stutter. That's deliberate.</li>
+    </ul>
+
+    <h2 id="fix"><span class="num">5</span>What to do</h2>
+    <div class="card"><div class="table-scroll"><table>
+      <tr><th>Setting</th><th>Why</th></tr>
+      <tr><td><code>rate 100000</code></td><td>Leaves room for voice on top of ~100 updates a second, so nothing gets choked</td></tr>
+      <tr><td><code>cl_updaterate 102</code></td><td>Full updates; with a high <code>rate</code> voice no longer costs you any</td></tr>
+      <tr><td><code>voice_overdrive 1</code></td><td>Keeps game sounds at full volume while people talk</td></tr>
+      <tr><td><code>voice_enable 0</code></td><td>Last resort: no voice played at all (we haven't checked whether the server then stops sending it to you)</td></tr>
+    </table></div></div>
+
+    <h2 id="test"><span class="num">6</span>How to check which it is</h2>
+    <ol class="steps">
+      <li>Turn on <code>net_graph 3</code>.</li>
+      <li>Have a few people talk at once. If <strong>choke</strong> rises while they talk, it's cause 1: raise <code>rate</code> and try again.</li>
+      <li>If choke stays at 0 but it still hitches, turn on <code>voice_profile 1</code>: high decode times point at cause 2 or your sound setup.</li>
+    </ol>
+    <div class="note"><p>This comes from reading the game's code; we haven't measured it in game yet. Tell us in the OTFC Discord what you see.</p></div>
+  </div>
+</div>
