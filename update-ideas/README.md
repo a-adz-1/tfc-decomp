@@ -27,6 +27,8 @@ client mispredicts. "Server-only" changes can't cause that.
 | [Bunnyhop cap settings](bunnyhop-cap.md): `bunnyhop_mode` 0/1/2 and `bunnyhop_limit` | 🟢 clean fix | client and server via physinfo; defaults change nothing |
 | [Auto reload that works](auto-reload.md): `cl_autoreload` | 🟢 viable | client and server · moderate |
 | [CS 1.6-style crosshairs](crosshairs.md) | 🟢 easy | client only · HUD |
+| [Team-coloured sniper dots](team-coloured-sniper-dots.md): `sv_sniperdot_teamcolour` | 🟢 easy | server side · plus a white dot sprite |
+| [Gentle team-coloured rings on grenades](grenade-team-rings.md): `sv_grenaderings` | 🟢 easy | server side · works on every client as it is |
 | [Air-strafe speed depends on fps](air-strafe-fps.md) | 🟡 trade-off | client and server · a rule change, needs agreement |
 | [Scripts run faster at higher fps](script-speed.md): `waitms` | 🟡 engine | engine (Valve only) · must be opt-in |
 | [Wall sticking](wall-sticking.md) | ❓ needs a repro | harness tests found nothing yet |
