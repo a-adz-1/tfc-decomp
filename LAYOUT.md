@@ -4,6 +4,7 @@ Reverse-engineered Team Fortress Classic (GoldSrc). One folder per binary, named
 
 - **25th-anniversary**: the Half-Life 25th Anniversary Update (November 2023) and later. What Steam installs by default; what nearly every player runs. Built by Valve with GCC 5 in the Steam Runtime "scout".
 - **pre25th-legacy**: the build from before that update (Steam's `legacy` branch). What most TFC servers run. Built with GCC 4.6.
+- **2026-patched-25th-anniversary**: our fixed build of the 25th, made exactly the way Valve built it.
 - **won**: the original WON (pre-Steam) releases. Held locally, not decompiled yet; see the notes in `server/won` and `client/won`.
 
 Valve's own binaries are not in this repository; each folder's README gives the MD5 of the original it was made from.
@@ -12,6 +13,7 @@ Valve's own binaries are not in this repository; each folder's README gives the 
 |---|---|---|---|
 | `server/tfc.so-25th-anniversary/` | server game | `tfc.so` | 25th Anniversary (push-field bug lives here) |
 | `server/tfc.so-pre25th-legacy/` | server game | `tfc.so` | pre-25th, "legacy" (what servers run) |
+| `server/tfc.so-2026-patched-25th-anniversary/` | server game | `tfc.so` | ours: the 25th built with Valve's compiler, plus the push fix and ramp fix (binary, patch, build script) |
 | `server/won/` | server game | — | WON builds held, not decompiled |
 | `client/client.so-25th-anniversary/` | client game | `client.so` | 25th Anniversary (what players run) |
 | `client/client.so-pre25th-legacy/` | client game | `client.so` | pre-25th, "legacy" |

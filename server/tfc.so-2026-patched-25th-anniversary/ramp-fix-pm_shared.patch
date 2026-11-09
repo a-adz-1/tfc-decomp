@@ -1,0 +1,27 @@
+--- a/pm_shared/pm_shared.c
++++ b/pm_shared/pm_shared.c
+@@ -891,6 +891,24 @@
+ 			break;
+ 		}
+ 
++		// Ramp fix: a plane we already hit during this move is the 1/32-unit contact margin on a
++		//  slope being reported again, not a corner. Counting it twice zeroes the velocity (the
++		//  "ramp bug": a dead stop on a slope, mostly at high frame rates). Nudge off the plane and
++		//  keep sliding instead. Must be here, before the plane is added: when the clip loop below
++		//  happens to accept the repeat, the move covers no distance and allFraction == 0 stops
++		//  the player anyway.
++		for ( i = 0; i < numplanes; i++ )
++		{
++			if ( DotProduct( trace.plane.normal, planes[i] ) > 0.99 )
++				break;
++		}
++		if ( i < numplanes )
++		{
++			VectorAdd( trace.plane.normal, pmove->velocity, pmove->velocity );
++			VectorCopy( pmove->velocity, original_velocity );
++			continue;
++		}
++
+ 		// Set up next clipping plane
+ 		VectorCopy (trace.plane.normal, planes[numplanes]);
+ 		numplanes++;
