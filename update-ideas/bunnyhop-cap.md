@@ -70,6 +70,19 @@ void PM_PreventMegaBunnyJumping( void )
 A missing key means "as today", so an updated client on an old server, or an old client on a server left at
 mode 0, behaves exactly as now. Only servers that use modes 1 or 2 need players on the updated client.
 
+## Can a player turn it on themselves? No
+
+The setting lives in **physinfo**, and only the server game can write that: the engine's one way in is
+`PF_SetPhysicsKeyValue`, which the game calls, and each move the server copies its own stored physinfo into the
+movement code (`SV_RunCmd`). A player's `setinfo` changes their userinfo, a different string the server never
+copies across. So on a server left at `bunnyhop_mode 0`:
+
+- the server applies the standard cap on every jump, whatever the client sends or does;
+- a hacked client that skips the cap only fools its own prediction: the server's result wins and the player is
+  snapped back to the capped speed on the next update. No advantage, just a correction.
+
+The same holds the other way: on a server with the cap off, a client can't turn it back on for others.
+
 ## Why
 
 Bunnyhopping is a core TFC movement skill, and communities disagree about the cap: some want the classic
