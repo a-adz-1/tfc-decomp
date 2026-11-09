@@ -1,0 +1,198 @@
+From 3b6c192b4ec451779d3e222d7ccb9f13703bf423 Mon Sep 17 00:00:00 2001
+From: a-adz-1 <a-adz-1@proton.me>
+Date: Mon, 9 Nov 2026 13:42:22 +0000
+Subject: [PATCH 4/4] addition: sv_grenaderings (+ _amount) team-coloured glow
+ on grenades; sv_sniperdot_teamcolour
+
+Both off by default and server-side: render settings the engine already sends every client.
+The dot uses the game's own white flare sprite tinted, since the stock dot is red.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ src/tfc/game.cpp                 |  7 +++++++
+ src/tfc/game.h                   |  3 +++
+ src/tfc/tf_wpn_grenades.cpp      |  4 ++++
+ src/tfc/tf_wpn_nails.cpp         |  3 +++
+ src/tfc/tfort.cpp                | 24 ++++++++++++++++++++++++
+ src/wpn_shared/tf_wpn_srifle.cpp | 13 +++++++++++++
+ 6 files changed, 54 insertions(+)
+
+diff --git a/src/tfc/game.cpp b/src/tfc/game.cpp
+index 6a4fe2c..ed6720e 100644
+--- a/src/tfc/game.cpp
++++ b/src/tfc/game.cpp
+@@ -65,6 +65,10 @@ cvar_t	mp_chattime = { "mp_chattime", "10", FCVAR_SERVER };
+ // Addition: bunnyhop cap (0 standard 1.7 x max speed, 1 the cap at bunnyhop_limit x max speed, 2 uncapped)
+ cvar_t	bunnyhop_mode = { "bunnyhop_mode", "0", FCVAR_SERVER };
+ cvar_t	bunnyhop_limit = { "bunnyhop_limit", "1.7", FCVAR_SERVER };
++// Addition: gentle team-coloured glow on thrown/fired grenades, and team-coloured sniper dots (both off by default)
++cvar_t	sv_grenaderings = { "sv_grenaderings", "0", FCVAR_SERVER };
++cvar_t	sv_grenaderings_amount = { "sv_grenaderings_amount", "6", FCVAR_SERVER };
++cvar_t	sv_sniperdot_teamcolour = { "sv_sniperdot_teamcolour", "0", FCVAR_SERVER };
+ 
+ // Engine cvars
+ cvar_t	*g_footsteps = NULL;
+@@ -118,6 +122,9 @@ void GameDLLInit( void )
+ 	CVAR_REGISTER( &mp_chattime );
+ 	CVAR_REGISTER( &bunnyhop_mode );
+ 	CVAR_REGISTER( &bunnyhop_limit );
++	CVAR_REGISTER( &sv_grenaderings );
++	CVAR_REGISTER( &sv_grenaderings_amount );
++	CVAR_REGISTER( &sv_sniperdot_teamcolour );
+ 
+ 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
+ }
+diff --git a/src/tfc/game.h b/src/tfc/game.h
+index 266b56d..c07064e 100644
+--- a/src/tfc/game.h
++++ b/src/tfc/game.h
+@@ -36,6 +36,9 @@ extern cvar_t	fragsleft;
+ extern cvar_t	timeleft;
+ extern cvar_t	mp_chattime;
+ extern cvar_t	bunnyhop_mode, bunnyhop_limit;
++extern cvar_t	sv_grenaderings, sv_grenaderings_amount, sv_sniperdot_teamcolour;
++Vector TF_TeamColour( int team_no );
++void TF_GrenadeRing( entvars_t *pev, int team_no );
+ 
+ // TFC class limits (tforttm.cpp)
+ extern cvar_t	cr_scout, cr_sniper, cr_soldier, cr_demoman, cr_medic, cr_hwguy, cr_pyro, cr_spy, cr_engineer, cr_random;
+diff --git a/src/tfc/tf_wpn_grenades.cpp b/src/tfc/tf_wpn_grenades.cpp
+index 7b98fe6..d288668 100644
+--- a/src/tfc/tf_wpn_grenades.cpp
++++ b/src/tfc/tf_wpn_grenades.cpp
+@@ -13,6 +13,7 @@
+ #include "monsters.h"
+ #include "weapons.h"
+ #include "player.h"
++#include "game.h"
+ #include "soundent.h"
+ #include "gamerules.h"
+ #include "tf_defs.h"
+@@ -75,6 +76,7 @@ void CTFPrimeGrenade::InitPriming( CBaseEntity *pOwner )
+ 	pev->nextthink = gpGlobals->time + getPinTime();
+ 	heat = gpGlobals->time + getPrimeTime() + getPinTime();
+ 	team_no = pOwner->team_no;
++	TF_GrenadeRing( pev, team_no );
+ 
+ 	// Clear the HUD icon of the last grenade primed
+ 	if ( pOwner->m_iszGrenadeName )
+@@ -343,6 +345,7 @@ void CTFBomblet::LaunchFromMirv( CTFMirvGrenade *pMirvGren )
+ 	Spawn();
+ 	UTIL_SetOrigin( pev, vecSrc );
+ 	pev->velocity = vecVelocity;
++	TF_GrenadeRing( pev, pMirvGren->team_no );
+ 	pev->avelocity = g_vecZero;
+ 	pev->angles = UTIL_VecToAngles( pev->velocity );
+ 	pev->owner = pMirvGren->pev->owner;
+@@ -496,6 +499,7 @@ void CTFCaltropGrenade::InitPriming( CBaseEntity *pOwner )
+ 	pev->nextthink = gpGlobals->time + getPinTime();
+ 	heat = gpGlobals->time + getPrimeTime() + getPinTime();
+ 	team_no = pOwner->team_no;
++	TF_GrenadeRing( pev, team_no );
+ 
+ 	if ( pOwner->m_iszGrenadeName )
+ 	{
+diff --git a/src/tfc/tf_wpn_nails.cpp b/src/tfc/tf_wpn_nails.cpp
+index d89786e..28b102d 100644
+--- a/src/tfc/tf_wpn_nails.cpp
++++ b/src/tfc/tf_wpn_nails.cpp
+@@ -13,6 +13,7 @@
+ #include "monsters.h"
+ #include "weapons.h"
+ #include "player.h"
++#include "game.h"
+ #include "gamerules.h"
+ #include "tf_defs.h"
+ 
+@@ -504,6 +505,7 @@ CTFGrenade *CTFGrenade::CreateTFGrenade( Vector vecOrigin, Vector vecAngles, CBa
+ 	pGrenade->Spawn();
+ 	pGrenade->SetTouch( &CTFGrenade::GrenadeTouch );
+ 	pGrenade->pev->owner = pOwner->edict();
++	TF_GrenadeRing( pGrenade->pev, pOwner->team_no );
+ 	pGrenade->team_no = pOwner->team_no;
+ 	pGrenade->pev->classname = MAKE_STRING( "tf_gl_grenade" );
+ 	pGrenade->deathtype = MAKE_STRING( "gl_grenade" );
+@@ -533,6 +535,7 @@ CTFGrenade *CTFGrenade::CreateTFPipebomb( Vector vecOrigin, Vector vecAngles, CB
+ 	pGrenade->Spawn();
+ 	pGrenade->SetTouch( &CGrenade::BounceTouch );
+ 	pGrenade->pev->owner = pOwner->edict();
++	TF_GrenadeRing( pGrenade->pev, pOwner->team_no );
+ 	pGrenade->team_no = pOwner->team_no;
+ 	pGrenade->pev->classname = MAKE_STRING( "tf_gl_pipebomb" );
+ 	pGrenade->deathtype = MAKE_STRING( "pipebomb" );
+diff --git a/src/tfc/tfort.cpp b/src/tfc/tfort.cpp
+index 19c91a9..2d09d1a 100644
+--- a/src/tfc/tfort.cpp
++++ b/src/tfc/tfort.cpp
+@@ -13,6 +13,7 @@
+ #include "cbase.h"
+ #include "monsters.h"
+ #include "player.h"
++#include "game.h"
+ #include "weapons.h"
+ #include "decals.h"
+ #include "tf_defs.h"
+@@ -232,6 +233,29 @@ BOOL CBasePlayer::PipebombsCanDet( void )
+ 	return TRUE;
+ }
+ 
++// Additions: team colours for the grenade rings and sniper dots
++Vector TF_TeamColour( int team_no )
++{
++	switch ( team_no )
++	{
++	case 1:  return Vector( 30, 120, 255 );		// blue
++	case 2:  return Vector( 255, 50, 50 );		// red
++	case 3:  return Vector( 255, 210, 0 );		// yellow
++	case 4:  return Vector( 40, 220, 40 );		// green
++	default: return Vector( 255, 255, 255 );
++	}
++}
++
++// sv_grenaderings: a thin glow shell in the thrower's team colour (renderamt is the shell's thickness)
++void TF_GrenadeRing( entvars_t *pev, int team_no )
++{
++	if ( !sv_grenaderings.value || team_no < 1 )
++		return;
++	pev->renderfx = kRenderFxGlowShell;
++	pev->rendercolor = TF_TeamColour( team_no );
++	pev->renderamt = max( 1.0f, min( sv_grenaderings_amount.value, 20.0f ) );
++}
++
+ void CBasePlayer::RemovePipebombs( void )
+ {
+ 	CBaseEntity *pEnt = UTIL_FindEntityByClassname( NULL, "tf_gl_pipebomb" );
+diff --git a/src/wpn_shared/tf_wpn_srifle.cpp b/src/wpn_shared/tf_wpn_srifle.cpp
+index feec9a1..648f8b5 100644
+--- a/src/wpn_shared/tf_wpn_srifle.cpp
++++ b/src/wpn_shared/tf_wpn_srifle.cpp
+@@ -18,6 +18,9 @@
+ #include "nodes.h"
+ #include "player.h"
+ #include "tf_defs.h"
++#ifndef CLIENT_DLL
++#include "game.h"
++#endif
+ 
+ // Shared by the sniper rifle and auto rifle (same view model)
+ enum srifle_e {
+@@ -134,6 +137,16 @@ void CTFSniperRifle::UpdateSpot( void )
+ 		m_pSpot = CLaserSpot::CreateSpot();
+ 		m_pSpot->pev->flags |= FL_SKIPLOCALHOST;
+ 		m_pSpot->pev->owner = m_pPlayer->edict();
++#ifndef CLIENT_DLL
++		// Addition: sv_sniperdot_teamcolour. The stock dot is red, so a tint can't make it blue: use the
++		// white flare sprite the game already has (the detpack light) tinted to the team colour.
++		if ( sv_sniperdot_teamcolour.value )
++		{
++			SET_MODEL( m_pSpot->edict(), "sprites/flare3.spr" );
++			m_pSpot->pev->rendercolor = TF_TeamColour( m_pPlayer->team_no );
++			m_pSpot->pev->scale = 0.3;
++		}
++#endif
+ 	}
+ 
+ 	UTIL_MakeVectors( m_pPlayer->pev->v_angle );
+-- 
+2.56.0
+

@@ -18,6 +18,9 @@
 #include "nodes.h"
 #include "player.h"
 #include "tf_defs.h"
+#ifndef CLIENT_DLL
+#include "game.h"
+#endif
 
 // Shared by the sniper rifle and auto rifle (same view model)
 enum srifle_e {
@@ -134,6 +137,16 @@ void CTFSniperRifle::UpdateSpot( void )
 		m_pSpot = CLaserSpot::CreateSpot();
 		m_pSpot->pev->flags |= FL_SKIPLOCALHOST;
 		m_pSpot->pev->owner = m_pPlayer->edict();
+#ifndef CLIENT_DLL
+		// Addition: sv_sniperdot_teamcolour. The stock dot is red, so a tint can't make it blue: use the
+		// white flare sprite the game already has (the detpack light) tinted to the team colour.
+		if ( sv_sniperdot_teamcolour.value )
+		{
+			SET_MODEL( m_pSpot->edict(), "sprites/flare3.spr" );
+			m_pSpot->pev->rendercolor = TF_TeamColour( m_pPlayer->team_no );
+			m_pSpot->pev->scale = 0.3;
+		}
+#endif
 	}
 
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle );

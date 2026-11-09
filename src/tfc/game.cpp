@@ -62,6 +62,13 @@ cvar_t	cr_spy = { "cr_spy", "0", FCVAR_SERVER };
 cvar_t	cr_engineer = { "cr_engineer", "0", FCVAR_SERVER };
 cvar_t	cr_random = { "cr_random", "0", FCVAR_SERVER };
 cvar_t	mp_chattime = { "mp_chattime", "10", FCVAR_SERVER };
+// Addition: bunnyhop cap (0 standard 1.7 x max speed, 1 the cap at bunnyhop_limit x max speed, 2 uncapped)
+cvar_t	bunnyhop_mode = { "bunnyhop_mode", "0", FCVAR_SERVER };
+cvar_t	bunnyhop_limit = { "bunnyhop_limit", "1.7", FCVAR_SERVER };
+// Addition: gentle team-coloured glow on thrown/fired grenades, and team-coloured sniper dots (both off by default)
+cvar_t	sv_grenaderings = { "sv_grenaderings", "0", FCVAR_SERVER };
+cvar_t	sv_grenaderings_amount = { "sv_grenaderings_amount", "6", FCVAR_SERVER };
+cvar_t	sv_sniperdot_teamcolour = { "sv_sniperdot_teamcolour", "0", FCVAR_SERVER };
 
 // Engine cvars
 cvar_t	*g_footsteps = NULL;
@@ -113,6 +120,11 @@ void GameDLLInit( void )
 	CVAR_REGISTER( &cr_engineer );
 	CVAR_REGISTER( &cr_random );
 	CVAR_REGISTER( &mp_chattime );
+	CVAR_REGISTER( &bunnyhop_mode );
+	CVAR_REGISTER( &bunnyhop_limit );
+	CVAR_REGISTER( &sv_grenaderings );
+	CVAR_REGISTER( &sv_grenaderings_amount );
+	CVAR_REGISTER( &sv_sniperdot_teamcolour );
 
 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
 }

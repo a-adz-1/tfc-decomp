@@ -414,6 +414,7 @@ public:
 	virtual void TeamFortress_TakeConcussionBlast(entvars_t *, float);
 	virtual void TeamFortress_Concuss(entvars_t *);
 	void ExplodeOldPipebomb(BOOL, BOOL);
+	BOOL PipebombsCanDet(void);	// fix: the det rule on its own clock
 	void RemovePipebombs();
 	void Engineer_RemoveBuildings();
 	void TeamFortress_RemoveBuildings();

@@ -1,0 +1,34 @@
+From 68127f2390ce6ee82dac2b5abdd2ec9bcffd4397 Mon Sep 17 00:00:00 2001
+From: a-adz-1 <a-adz-1@proton.me>
+Date: Mon, 9 Nov 2026 13:39:36 +0000
+Subject: [PATCH 1/4] fix: quick fire: clamp GetNextAttackDelay's creep to one
+ frame (server)
+
+Holding fire across a weapon switch let the next delay shrink to nothing (soldier quick
+fire, early pipebomb det). The client's copy already returns the plain delay.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ src/tfc/weapons.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/src/tfc/weapons.cpp b/src/tfc/weapons.cpp
+index 321651a..1ad2e48 100644
+--- a/src/tfc/weapons.cpp
++++ b/src/tfc/weapons.cpp
+@@ -1196,7 +1196,11 @@ float CBasePlayerWeapon::GetNextAttackDelay( float delay )
+ 	float flCreep = 0.0f;
+ 	if(flTimeBetweenFires > 0)
+ 			flCreep = flTimeBetweenFires - m_flPrevPrimaryAttack; // postive or negative
+-	
++	// Fix (quick fire): only make up for a shot fired late by frame rounding, never for one held back
++	// (weapon switch, reload), which shrank the next delay to nothing. The client's copy of this
++	// function returns the plain delay, so this also keeps the server with what the client predicts.
++	flCreep = max( 0.0f, min( flCreep, gpGlobals->frametime ) );
++
+ 	// save the last fire time
+ 	m_flLastFireTime = gpGlobals->time;		
+ 	
+-- 
+2.56.0
+

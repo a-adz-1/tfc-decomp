@@ -13,6 +13,7 @@
 #include "monsters.h"
 #include "weapons.h"
 #include "player.h"
+#include "game.h"
 #include "gamerules.h"
 #include "tf_defs.h"
 
@@ -504,6 +505,7 @@ CTFGrenade *CTFGrenade::CreateTFGrenade( Vector vecOrigin, Vector vecAngles, CBa
 	pGrenade->Spawn();
 	pGrenade->SetTouch( &CTFGrenade::GrenadeTouch );
 	pGrenade->pev->owner = pOwner->edict();
+	TF_GrenadeRing( pGrenade->pev, pOwner->team_no );
 	pGrenade->team_no = pOwner->team_no;
 	pGrenade->pev->classname = MAKE_STRING( "tf_gl_grenade" );
 	pGrenade->deathtype = MAKE_STRING( "gl_grenade" );
@@ -533,6 +535,7 @@ CTFGrenade *CTFGrenade::CreateTFPipebomb( Vector vecOrigin, Vector vecAngles, CB
 	pGrenade->Spawn();
 	pGrenade->SetTouch( &CGrenade::BounceTouch );
 	pGrenade->pev->owner = pOwner->edict();
+	TF_GrenadeRing( pGrenade->pev, pOwner->team_no );
 	pGrenade->team_no = pOwner->team_no;
 	pGrenade->pev->classname = MAKE_STRING( "tf_gl_pipebomb" );
 	pGrenade->deathtype = MAKE_STRING( "pipebomb" );

@@ -1,6 +1,6 @@
-# Demoman det: reloading blocks it, and sometimes it's too quick
+# Pipebomb det: reloading blocks it, and sometimes it's too quick
 
-**Rating: 🟢 easy, server-only.** Detonating isn't predicted by the client, so the fix needs no client change
+**Rating: 🔧 built, server-only** ([patch](../server/tfc.so-2026-patched-25th-anniversary/patches)). Detonating isn't predicted by the client, so the fix needs no client change
 and can't cause a mismatch. It could even be done today in a server plugin and be a full fix, not a
 workaround.
 
@@ -32,7 +32,8 @@ Separately, dying sets off all your pipes at once, whatever their age (`TeamFort
 
 ## The fix
 
-Give the rule its own clock instead of borrowing a weapon timer:
+Give the rule its own clock instead of borrowing a weapon timer. As built, it reads the age of your newest pipe,
+so nothing new needs storing:
 
 ```cpp
 // CTFPipebombLauncher::PrimaryAttack, when a pipe is fired

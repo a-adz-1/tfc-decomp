@@ -1,8 +1,10 @@
-# Soldier quick fire and demoman quick det: one cause
+# Soldier quick fire and early pipebomb det: one cause
 
-**Rating: 🟢 clean fix.** The root cause is clear in the code and the fix is a one-line clamp. It goes in the
-shared weapon code, so client and server must both get it (both predict weapon timing). Confirmed in the code,
-not yet reproduced in game.
+**Rating: 🔧 built, server only.** The root cause is clear in the code and the fix is a one-line clamp, now in
+the patched server build ([patch](../server/tfc.so-2026-patched-25th-anniversary/patches)). It's server-only:
+the client's copy of this function already returns the plain delay, so the server was the odd one out, and
+quick fire was also mispredicted (your game showed the normal delay, the server fired early). Not yet
+reproduced in game.
 
 ## The cause: `GetNextAttackDelay`'s "creep"
 
@@ -59,8 +61,8 @@ Only ever make up for frame rounding: at most one frame.
 ```
 
 Automatic weapons keep their exact fire rate at any frame rate (the rounding they lose is at most a frame);
-nothing else can borrow time. The function is compiled into both the server and the client (the client
-predicts weapon timing), so both must have it, or the client predicts the old quick shot and is corrected.
+nothing else can borrow time. The client's version (`cl_dll/tfc/tf_baseentity.cpp`) is just
+`return delay;`, so with the fix the server agrees with what your game already predicts.
 
 ## How to confirm before shipping
 

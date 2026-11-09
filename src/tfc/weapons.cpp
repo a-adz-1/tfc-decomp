@@ -1196,7 +1196,11 @@ float CBasePlayerWeapon::GetNextAttackDelay( float delay )
 	float flCreep = 0.0f;
 	if(flTimeBetweenFires > 0)
 			flCreep = flTimeBetweenFires - m_flPrevPrimaryAttack; // postive or negative
-	
+	// Fix (quick fire): only make up for a shot fired late by frame rounding, never for one held back
+	// (weapon switch, reload), which shrank the next delay to nothing. The client's copy of this
+	// function returns the plain delay, so this also keeps the server with what the client predicts.
+	flCreep = max( 0.0f, min( flCreep, gpGlobals->frametime ) );
+
 	// save the last fire time
 	m_flLastFireTime = gpGlobals->time;		
 	

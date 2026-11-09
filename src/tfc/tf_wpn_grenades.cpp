@@ -13,6 +13,7 @@
 #include "monsters.h"
 #include "weapons.h"
 #include "player.h"
+#include "game.h"
 #include "soundent.h"
 #include "gamerules.h"
 #include "tf_defs.h"
@@ -75,6 +76,7 @@ void CTFPrimeGrenade::InitPriming( CBaseEntity *pOwner )
 	pev->nextthink = gpGlobals->time + getPinTime();
 	heat = gpGlobals->time + getPrimeTime() + getPinTime();
 	team_no = pOwner->team_no;
+	TF_GrenadeRing( pev, team_no );
 
 	// Clear the HUD icon of the last grenade primed
 	if ( pOwner->m_iszGrenadeName )
@@ -343,6 +345,7 @@ void CTFBomblet::LaunchFromMirv( CTFMirvGrenade *pMirvGren )
 	Spawn();
 	UTIL_SetOrigin( pev, vecSrc );
 	pev->velocity = vecVelocity;
+	TF_GrenadeRing( pev, pMirvGren->team_no );
 	pev->avelocity = g_vecZero;
 	pev->angles = UTIL_VecToAngles( pev->velocity );
 	pev->owner = pMirvGren->pev->owner;
@@ -496,6 +499,7 @@ void CTFCaltropGrenade::InitPriming( CBaseEntity *pOwner )
 	pev->nextthink = gpGlobals->time + getPinTime();
 	heat = gpGlobals->time + getPrimeTime() + getPinTime();
 	team_no = pOwner->team_no;
+	TF_GrenadeRing( pev, team_no );
 
 	if ( pOwner->m_iszGrenadeName )
 	{

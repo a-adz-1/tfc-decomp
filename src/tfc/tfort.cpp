@@ -13,6 +13,7 @@
 #include "cbase.h"
 #include "monsters.h"
 #include "player.h"
+#include "game.h"
 #include "weapons.h"
 #include "decals.h"
 #include "tf_defs.h"
@@ -218,6 +219,41 @@ void CBasePlayer::ExplodeOldPipebomb( BOOL bAll, BOOL bForceDetonation )
 			pEnt = UTIL_FindEntityByClassname( pEnt, "tf_gl_pipebomb" );
 		}
 	}
+}
+
+// Fix (det blocked by reloading): the rule is "no det within 0.6 s of firing a pipe". It used to read the
+// held weapon's attack timer, which reloading and weapon switching also set; read the newest pipe's age instead.
+BOOL CBasePlayer::PipebombsCanDet( void )
+{
+	for ( CBaseEntity *pEnt = UTIL_FindEntityByClassname( NULL, "tf_gl_pipebomb" ); pEnt; pEnt = UTIL_FindEntityByClassname( pEnt, "tf_gl_pipebomb" ) )
+	{
+		if ( CBaseEntity::Instance( pEnt->pev->owner ) == this && ((CTFGrenade *)pEnt)->m_flCreationTime + 0.6 > gpGlobals->time )
+			return FALSE;
+	}
+	return TRUE;
+}
+
+// Additions: team colours for the grenade rings and sniper dots
+Vector TF_TeamColour( int team_no )
+{
+	switch ( team_no )
+	{
+	case 1:  return Vector( 30, 120, 255 );		// blue
+	case 2:  return Vector( 255, 50, 50 );		// red
+	case 3:  return Vector( 255, 210, 0 );		// yellow
+	case 4:  return Vector( 40, 220, 40 );		// green
+	default: return Vector( 255, 255, 255 );
+	}
+}
+
+// sv_grenaderings: a thin glow shell in the thrower's team colour (renderamt is the shell's thickness)
+void TF_GrenadeRing( entvars_t *pev, int team_no )
+{
+	if ( !sv_grenaderings.value || team_no < 1 )
+		return;
+	pev->renderfx = kRenderFxGlowShell;
+	pev->rendercolor = TF_TeamColour( team_no );
+	pev->renderamt = max( 1.0f, min( sv_grenaderings_amount.value, 20.0f ) );
 }
 
 void CBasePlayer::RemovePipebombs( void )

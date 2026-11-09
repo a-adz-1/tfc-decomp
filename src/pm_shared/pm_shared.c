@@ -2471,7 +2471,14 @@ void PM_PreventMegaBunnyJumping( void )
 	// Speed at which bunny jumping is limited
 	float maxscaledspeed;
 
-	maxscaledspeed = BUNNYJUMP_MAX_SPEED_FACTOR * pmove->maxspeed;
+	// Addition: the server's bunnyhop_mode / bunnyhop_limit as one factor in physinfo ("bhf"; 0 uncapped).
+	//  No key (an older server) means the standard factor.
+	const char *bhf = pmove->PM_Info_ValueForKey( pmove->physinfo, "bhf" );
+	float factor = bhf[0] ? (float)atof( bhf ) : BUNNYJUMP_MAX_SPEED_FACTOR;
+
+	if ( factor <= 0.0f )
+		return;	// uncapped
+	maxscaledspeed = factor * pmove->maxspeed;
 
 	// Don't divide by zero
 	if ( maxscaledspeed <= 0.0f )

@@ -950,8 +950,8 @@ void ClientCommand( edict_t *pEntity )
 
 	if ( FStrEq( pcmd, "detpipe" ) )
 	{
-		// Pipebombs can't go off until the launcher can fire again
-		if ( pPlayer->m_pActiveItem && ( (CBasePlayerWeapon *)pPlayer->m_pActiveItem )->m_flNextPrimaryAttack <= 0 )
+		// Pipebombs can't go off within 0.6 s of firing one
+		if ( pPlayer->PipebombsCanDet() )
 			pPlayer->ExplodeOldPipebomb( TRUE, FALSE );
 	}
 	else if ( FStrEq( pcmd, "throwgren" ) || FStrEq( pcmd, "-gren1" ) || FStrEq( pcmd, "-gren2" ) )

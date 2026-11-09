@@ -1,0 +1,102 @@
+From 719c9245e7dd3d23a68adbe685d85d743d565c15 Mon Sep 17 00:00:00 2001
+From: a-adz-1 <a-adz-1@proton.me>
+Date: Mon, 9 Nov 2026 13:41:19 +0000
+Subject: [PATCH 3/4] addition: bunnyhop_mode (0 standard, 1 bunnyhop_limit, 2
+ uncapped) and bunnyhop_limit
+
+Sent to each player's movement and their client's prediction through physinfo ("bhf");
+no key means the standard 1.7, so old clients on a default server are unchanged.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ src/pm_shared/pm_shared.c |  9 ++++++++-
+ src/tfc/game.cpp          |  5 +++++
+ src/tfc/game.h            |  1 +
+ src/tfc/player.cpp        | 16 ++++++++++++++++
+ 4 files changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/src/pm_shared/pm_shared.c b/src/pm_shared/pm_shared.c
+index 9297555..d63b730 100644
+--- a/src/pm_shared/pm_shared.c
++++ b/src/pm_shared/pm_shared.c
+@@ -2471,7 +2471,14 @@ void PM_PreventMegaBunnyJumping( void )
+ 	// Speed at which bunny jumping is limited
+ 	float maxscaledspeed;
+ 
+-	maxscaledspeed = BUNNYJUMP_MAX_SPEED_FACTOR * pmove->maxspeed;
++	// Addition: the server's bunnyhop_mode / bunnyhop_limit as one factor in physinfo ("bhf"; 0 uncapped).
++	//  No key (an older server) means the standard factor.
++	const char *bhf = pmove->PM_Info_ValueForKey( pmove->physinfo, "bhf" );
++	float factor = bhf[0] ? (float)atof( bhf ) : BUNNYJUMP_MAX_SPEED_FACTOR;
++
++	if ( factor <= 0.0f )
++		return;	// uncapped
++	maxscaledspeed = factor * pmove->maxspeed;
+ 
+ 	// Don't divide by zero
+ 	if ( maxscaledspeed <= 0.0f )
+diff --git a/src/tfc/game.cpp b/src/tfc/game.cpp
+index 551b56b..6a4fe2c 100644
+--- a/src/tfc/game.cpp
++++ b/src/tfc/game.cpp
+@@ -62,6 +62,9 @@ cvar_t	cr_spy = { "cr_spy", "0", FCVAR_SERVER };
+ cvar_t	cr_engineer = { "cr_engineer", "0", FCVAR_SERVER };
+ cvar_t	cr_random = { "cr_random", "0", FCVAR_SERVER };
+ cvar_t	mp_chattime = { "mp_chattime", "10", FCVAR_SERVER };
++// Addition: bunnyhop cap (0 standard 1.7 x max speed, 1 the cap at bunnyhop_limit x max speed, 2 uncapped)
++cvar_t	bunnyhop_mode = { "bunnyhop_mode", "0", FCVAR_SERVER };
++cvar_t	bunnyhop_limit = { "bunnyhop_limit", "1.7", FCVAR_SERVER };
+ 
+ // Engine cvars
+ cvar_t	*g_footsteps = NULL;
+@@ -113,6 +116,8 @@ void GameDLLInit( void )
+ 	CVAR_REGISTER( &cr_engineer );
+ 	CVAR_REGISTER( &cr_random );
+ 	CVAR_REGISTER( &mp_chattime );
++	CVAR_REGISTER( &bunnyhop_mode );
++	CVAR_REGISTER( &bunnyhop_limit );
+ 
+ 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
+ }
+diff --git a/src/tfc/game.h b/src/tfc/game.h
+index 0d57364..266b56d 100644
+--- a/src/tfc/game.h
++++ b/src/tfc/game.h
+@@ -35,6 +35,7 @@ extern cvar_t	decalfrequency;
+ extern cvar_t	fragsleft;
+ extern cvar_t	timeleft;
+ extern cvar_t	mp_chattime;
++extern cvar_t	bunnyhop_mode, bunnyhop_limit;
+ 
+ // TFC class limits (tforttm.cpp)
+ extern cvar_t	cr_scout, cr_sniper, cr_soldier, cr_demoman, cr_medic, cr_hwguy, cr_pyro, cr_spy, cr_engineer, cr_random;
+diff --git a/src/tfc/player.cpp b/src/tfc/player.cpp
+index f069207..e248e4b 100644
+--- a/src/tfc/player.cpp
++++ b/src/tfc/player.cpp
+@@ -2055,6 +2055,22 @@ int  CBasePlayer::Classify ( void )
+ void CBasePlayer::PreThink(void)
+ {
+ 	int buttonsChanged = (m_afButtonLast ^ pev->button);	// These buttons have changed this frame
++
++	// Addition: the bunnyhop cap reaches each player's movement (and their client's prediction) through physinfo
++	// as one factor, "bhf": 0 uncapped; no key means the standard 1.7. Only sent when it changes.
++	{
++		static float s_bhf[33];
++		int mode = (int)bunnyhop_mode.value;
++		float bhf = mode == 2 ? 0.0f : mode == 1 ? max( 0.0f, bunnyhop_limit.value ) : 1.7f;
++		int i = entindex();
++		if ( i >= 1 && i <= 32 && ( s_bhf[i] != bhf || !*g_engfuncs.pfnInfoKeyValue( (char *)g_engfuncs.pfnGetPhysicsInfoString( edict() ), (char *)"bhf" ) ) )
++		{
++			char sz[16];
++			snprintf( sz, sizeof( sz ), "%g", bhf );
++			g_engfuncs.pfnSetPhysicsKeyValue( edict(), "bhf", sz );
++			s_bhf[i] = bhf;
++		}
++	}
+ 	
+ 	// Debounced button codes for pressed/released
+ 	// UNDONE: Do we need auto-repeat?
+-- 
+2.56.0
+

@@ -2055,6 +2055,22 @@ int  CBasePlayer::Classify ( void )
 void CBasePlayer::PreThink(void)
 {
 	int buttonsChanged = (m_afButtonLast ^ pev->button);	// These buttons have changed this frame
+
+	// Addition: the bunnyhop cap reaches each player's movement (and their client's prediction) through physinfo
+	// as one factor, "bhf": 0 uncapped; no key means the standard 1.7. Only sent when it changes.
+	{
+		static float s_bhf[33];
+		int mode = (int)bunnyhop_mode.value;
+		float bhf = mode == 2 ? 0.0f : mode == 1 ? max( 0.0f, bunnyhop_limit.value ) : 1.7f;
+		int i = entindex();
+		if ( i >= 1 && i <= 32 && ( s_bhf[i] != bhf || !*g_engfuncs.pfnInfoKeyValue( (char *)g_engfuncs.pfnGetPhysicsInfoString( edict() ), (char *)"bhf" ) ) )
+		{
+			char sz[16];
+			snprintf( sz, sizeof( sz ), "%g", bhf );
+			g_engfuncs.pfnSetPhysicsKeyValue( edict(), "bhf", sz );
+			s_bhf[i] = bhf;
+		}
+	}
 	
 	// Debounced button codes for pressed/released
 	// UNDONE: Do we need auto-repeat?
@@ -7185,8 +7201,8 @@ void CBasePlayer::UseSpecialSkill( void )
 		break;
 
 	case PC_DEMOMAN:
-		// Detonate pipebombs
-		if ( m_pActiveItem && ( (CBasePlayerWeapon *)m_pActiveItem )->m_flNextPrimaryAttack <= 0 )
+		// Detonate pipebombs (not within 0.6 s of firing one)
+		if ( PipebombsCanDet() )
 			ExplodeOldPipebomb( TRUE, FALSE );
 		break;
 

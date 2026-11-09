@@ -35,6 +35,10 @@ extern cvar_t	decalfrequency;
 extern cvar_t	fragsleft;
 extern cvar_t	timeleft;
 extern cvar_t	mp_chattime;
+extern cvar_t	bunnyhop_mode, bunnyhop_limit;
+extern cvar_t	sv_grenaderings, sv_grenaderings_amount, sv_sniperdot_teamcolour;
+Vector TF_TeamColour( int team_no );
+void TF_GrenadeRing( entvars_t *pev, int team_no );
 
 // TFC class limits (tforttm.cpp)
 extern cvar_t	cr_scout, cr_sniper, cr_soldier, cr_demoman, cr_medic, cr_hwguy, cr_pyro, cr_spy, cr_engineer, cr_random;
