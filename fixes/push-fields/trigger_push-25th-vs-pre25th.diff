@@ -1,0 +1,76 @@
+--- tfc.so-25th-anniversary/CTriggerPush::Touch (decompiled)
++++ tfc.so-pre25th-legacy/CTriggerPush::Touch (decompiled)
+@@ -1,4 +1,4 @@
+-// CTriggerPush::Touch  @ 00117190  (line 1754)
++// CTriggerPush::Touch  @ 001487a0  (line 1754)
+ 
+ /* DWARF original prototype: void Touch(CTriggerPush * this, CBaseEntity * pOther) */
+ 
+@@ -11,46 +11,42 @@
+   entvars_t *peVar4;
+   uint uVar5;
+   float fVar6;
+-  float fVar7;
+-  int iVar8;
+-  BOOL BVar9;
++  int iVar7;
++  BOOL BVar8;
+   
+                     /* Unresolved local var: entvars_t * pevToucher@[???] */
+   peVar3 = pOther->pev;
+   if ((((0xc < (uint)peVar3->movetype) || ((1 << ((byte)peVar3->movetype & 0x1f) & 0x1181U) == 0))
+-      && ((peVar3->solid & 0xfffffffbU) != 0)) &&
+-     ((iVar8 = (*pOther->_vptr_CBaseEntity[10])(pOther), iVar8 != 2 ||
+-      (BVar9 = ActivationSucceeded((CBaseEntity *)this,(CBasePlayer *)pOther,(CBaseEntity *)0x0),
+-      BVar9 != 0)))) {
++      && (peVar3->solid != 4)) &&
++     ((peVar3->solid != 0 &&
++      ((iVar7 = (*pOther->_vptr_CBaseEntity[10])(pOther), iVar7 != 2 ||
++       (BVar8 = ActivationSucceeded((CBaseEntity *)this,(CBasePlayer *)pOther,(CBaseEntity *)0x0),
++       BVar8 != 0)))))) {
+     peVar4 = (this->super_CBaseTrigger).super_CBaseToggle.super_CBaseAnimating.super_CBaseDelay.
+              super_CBaseEntity.pev;
+     if ((peVar4->spawnflags & 1) == 0) {
+                     /* Unresolved local var: Vector vecPush@[???] */
+-      fVar2 = 1.0;
+-      if (gpGlobals->frametime != 0.0) {
+-        fVar2 = gpGlobals->frametime;
+-      }
+       fVar1 = peVar4->speed;
+-      fVar6 = ((peVar4->movedir).z * fVar1) / fVar2;
+-      fVar7 = ((peVar4->movedir).y * fVar1) / fVar2;
++      fVar2 = (peVar4->movedir).z * fVar1;
++      fVar6 = (peVar4->movedir).y * fVar1;
++      fVar1 = fVar1 * (peVar4->movedir).x;
+       uVar5 = peVar3->flags;
+-      fVar2 = (fVar1 * (peVar4->movedir).x) / fVar2;
+       if ((uVar5 & 0x400000) != 0) {
+-        fVar6 = fVar6 + (peVar3->basevelocity).z;
+-        fVar7 = fVar7 + (peVar3->basevelocity).y;
+-        fVar2 = fVar2 + (peVar3->basevelocity).x;
++        fVar2 = fVar2 + (peVar3->basevelocity).z;
++        fVar6 = fVar6 + (peVar3->basevelocity).y;
++        fVar1 = fVar1 + (peVar3->basevelocity).x;
+       }
+-      (peVar3->basevelocity).x = fVar2;
+-      (peVar3->basevelocity).y = fVar7;
+-      (peVar3->basevelocity).z = fVar6;
++      (peVar3->basevelocity).x = fVar1;
++      (peVar3->basevelocity).y = fVar6;
++      (peVar3->basevelocity).z = fVar2;
+       peVar3->flags = uVar5 | 0x400000;
+       return;
+     }
+-    fVar2 = peVar4->speed;
+-    fVar6 = (peVar4->movedir).z * fVar2 + (peVar3->velocity).z;
+-    fVar1 = (peVar4->movedir).y;
+-    (peVar3->velocity).x = fVar2 * (peVar4->movedir).x + (peVar3->velocity).x;
+-    (peVar3->velocity).y = fVar1 * fVar2 + (peVar3->velocity).y;
++    fVar1 = peVar4->speed;
++    fVar6 = (peVar4->movedir).z * fVar1 + (peVar3->velocity).z;
++    fVar2 = (peVar4->movedir).y;
++    (peVar3->velocity).x = fVar1 * (peVar4->movedir).x + (peVar3->velocity).x;
++    (peVar3->velocity).y = fVar2 * fVar1 + (peVar3->velocity).y;
+     (peVar3->velocity).z = fVar6;
+     if (0.0 < fVar6) {
+       peVar3->flags = peVar3->flags & 0xfffffdff;
