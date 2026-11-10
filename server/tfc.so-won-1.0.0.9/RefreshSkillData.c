@@ -1,0 +1,44 @@
+// RefreshSkillData__10CGameRules  @ 000b6d70
+/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+void RefreshSkillData__10CGameRules(void)
+
+{
+  _DAT_00177a5c = 0x447a0000;
+  _DAT_00177a60 = 0x447a0000;
+  _DAT_00177a64 = 0x447a0000;
+  _DAT_00177a68 = 0x41c80000;
+  _DAT_00177a6c = 0x41400000;
+  _DAT_00177a70 = 0x42200000;
+  _DAT_00177a74 = 0x41400000;
+  _DAT_00177a78 = 0x42c80000;
+  _DAT_00177a7c = 0x41a00000;
+  _DAT_00177a80 = 0x41a00000;
+  _DAT_00177a88 = 0x42f00000;
+  _DAT_00177a94 = 0x41a00000;
+  _DAT_00177a90 = 0x41200000;
+  _DAT_00177a9c = 0x42c80000;
+  _DAT_00177aa0 = 0x42f00000;
+  _DAT_00177aa4 = 0x43160000;
+  _DAT_00177a98 = 0x41200000;
+  _DAT_00177ab0 = 0x41000000;
+  _DAT_00177aac = 0x40400000;
+  _DAT_00177aa8 = 0x40a00000;
+  _DAT_00177ab8 = 0x42960000;
+  _DAT_00177abc = 0x41700000;
+  _DAT_00177ac0 = 0x41700000;
+  _DAT_00177ac4 = 0x41c80000;
+  _DAT_00177acc = 0x40400000;
+  _DAT_00177ad0 = 0x3f800000;
+  _DAT_00177ad4 = 0x3f800000;
+  _DAT_00177ad8 = 0x3f800000;
+  _DAT_00177adc = 0x3f800000;
+  _DAT_00177ae0 = 0x40400000;
+  _DAT_00177ae4 = 0x3f800000;
+  _DAT_00177ae8 = 0x3f800000;
+  _DAT_00177aec = 0x3f800000;
+  _DAT_00177af0 = 0x3f800000;
+  return;
+}
+
+

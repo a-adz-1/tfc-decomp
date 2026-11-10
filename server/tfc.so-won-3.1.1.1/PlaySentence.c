@@ -1,0 +1,52 @@
+// PlaySentence__12CBaseMonsterPCcfff  @ 000c18f0
+void PlaySentence__12CBaseMonsterPCcfff
+               (int *param_1,char *param_2,undefined4 param_3,undefined4 param_4,undefined4 param_5)
+
+{
+  int iVar1;
+  
+  if (param_2 != (char *)0x0) {
+    iVar1 = (**(code **)(param_1[0x115] + 0x8c))(param_1);
+    if (iVar1 != 0) {
+      if (*param_2 == '!') {
+        EMIT_SOUND_DYN__FP7edict_siPCcffii
+                  (*(undefined4 *)(*param_1 + 0x208),2,param_2,param_4,param_5,0,100);
+      }
+      else {
+        SENTENCEG_PlayRndSz__FP7edict_sPCcffii
+                  (*(undefined4 *)(*param_1 + 0x208),param_2,param_4,param_5,0,100);
+      }
+    }
+  }
+  return;
+}
+
+
+// PlaySentence__12CTalkMonsterPCcfff  @ 000f8b44
+void PlaySentence__12CTalkMonsterPCcfff
+               (int *param_1,char *param_2,float param_3,undefined4 param_4,undefined4 param_5)
+
+{
+  int iVar1;
+  
+  if (param_2 != (char *)0x0) {
+    Talk__12CTalkMonsterf(param_1,param_3);
+    _12CTalkMonster_g_talkWaitTime = param_3 + *gpGlobals + 2.0;
+    if (*param_2 == '!') {
+      iVar1 = (*DAT_0019f808)(0,3);
+      EMIT_SOUND_DYN__FP7edict_siPCcffii
+                (*(undefined4 *)(*param_1 + 0x208),2,param_2,param_4,param_5,0,
+                 iVar1 + param_1[0x1a9]);
+    }
+    else {
+      iVar1 = (*DAT_0019f808)(0,3);
+      SENTENCEG_PlayRndSz__FP7edict_sPCcffii
+                (*(undefined4 *)(*param_1 + 0x208),param_2,param_4,param_5,0,iVar1 + param_1[0x1a9])
+      ;
+    }
+    *(byte *)(param_1 + 0x1a7) = *(byte *)(param_1 + 0x1a7) | 8;
+  }
+  return;
+}
+
+

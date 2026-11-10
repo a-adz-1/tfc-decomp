@@ -1,0 +1,71 @@
+// AddPlayerItem__11CBaseEntityP15CBasePlayerItem  @ 00112efc
+undefined4 AddPlayerItem__11CBaseEntityP15CBasePlayerItem(void)
+
+{
+  return 0;
+}
+
+
+// AddPlayerItem__11CBasePlayerP15CBasePlayerItem  @ 000db260
+undefined4 AddPlayerItem__11CBasePlayerP15CBasePlayerItem(int param_1,undefined4 *param_2)
+
+{
+  undefined4 *puVar1;
+  int iVar2;
+  undefined4 uVar3;
+  int iVar4;
+  
+  iVar2 = (**(code **)(param_2[0x115] + 0x114))(param_2);
+  iVar4 = param_1 + 0x8c4;
+  puVar1 = *(undefined4 **)(iVar4 + iVar2 * 4);
+  do {
+    if (puVar1 == (undefined4 *)0x0) {
+      iVar2 = (**(code **)(param_2[0x115] + 0x10c))(param_2,param_1);
+      if (iVar2 == 0) {
+        if (gEvilImpulse101 != 0) {
+LAB_000db423:
+          iVar2 = param_2[0x115];
+LAB_000db42d:
+          (**(code **)(iVar2 + 0x13c))(param_2);
+        }
+LAB_000db435:
+        uVar3 = 0;
+      }
+      else {
+        (**(code **)(*g_pGameRules + 0x80))(g_pGameRules,param_1,param_2);
+        CheckRespawn__15CBasePlayerItem(param_2);
+        iVar2 = (**(code **)(param_2[0x115] + 0x114))(param_2);
+        param_2[0x11e] = *(undefined4 *)(iVar4 + iVar2 * 4);
+        iVar2 = (**(code **)(param_2[0x115] + 0x114))(param_2);
+        *(undefined4 **)(iVar4 + iVar2 * 4) = param_2;
+        iVar2 = (**(code **)(*g_pGameRules + 0x18))(g_pGameRules,param_1,param_2);
+        if (iVar2 != 0) {
+          SwitchWeapon__11CBasePlayerP15CBasePlayerItem(param_1,param_2);
+        }
+        uVar3 = 1;
+      }
+      return uVar3;
+    }
+    iVar2 = strcmp((char *)(*(int *)(gpGlobals + 0x98) + *(int *)*puVar1),
+                   (char *)(*(int *)(gpGlobals + 0x98) + *(int *)*param_2));
+    if (iVar2 == 0) {
+      iVar2 = (**(code **)(param_2[0x115] + 0x110))(param_2,puVar1);
+      if (iVar2 != 0) {
+        (**(code **)(*g_pGameRules + 0x80))(g_pGameRules,param_1,param_2);
+        CheckRespawn__15CBasePlayerItem(param_2);
+        (**(code **)(puVar1[0x115] + 300))(puVar1);
+        iVar2 = *(int *)(param_1 + 0x8dc);
+        if (iVar2 != 0) {
+          (**(code **)(*(int *)(iVar2 + 0x454) + 300))(iVar2);
+        }
+        goto LAB_000db423;
+      }
+      if (gEvilImpulse101 == 0) goto LAB_000db435;
+      iVar2 = param_2[0x115];
+      goto LAB_000db42d;
+    }
+    puVar1 = (undefined4 *)puVar1[0x11e];
+  } while( true );
+}
+
+

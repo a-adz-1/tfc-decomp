@@ -1,0 +1,95 @@
+// Look__12CBaseMonsteri  @ 000b9f4c
+void Look__12CBaseMonsteri(int *param_1,int param_2)
+
+{
+  int *piVar1;
+  int iVar2;
+  int iVar3;
+  int *piVar4;
+  undefined4 uVar5;
+  uint uVar6;
+  int local_1bc;
+  float local_1b4;
+  float local_1b0;
+  float local_1ac;
+  float local_1a8;
+  float local_1a4;
+  float local_1a0;
+  float local_19c;
+  float local_198;
+  float local_194;
+  undefined4 local_190 [100];
+  
+  uVar6 = 0;
+  param_1[0x13a] = param_1[0x13a] & 0xff9fffe1;
+  param_1[2] = 0;
+  iVar2 = *param_1;
+  if ((*(byte *)(iVar2 + 0x1a0) & 0x10) == 0) {
+    local_19c = (float)param_2;
+    local_1a8 = *(float *)(iVar2 + 8) + local_19c;
+    local_1a4 = *(float *)(iVar2 + 0xc) + local_19c;
+    local_1a0 = *(float *)(iVar2 + 0x10) + local_19c;
+    local_1b4 = *(float *)(iVar2 + 8) - local_19c;
+    local_1b0 = *(float *)(iVar2 + 0xc) - local_19c;
+    local_1ac = *(float *)(iVar2 + 0x10) - local_19c;
+    local_198 = local_19c;
+    local_194 = local_19c;
+    iVar2 = UTIL_EntitiesInBox__FPP11CBaseEntityiRC6VectorT2i
+                      (local_190,100,&local_1b4,&local_1a8,0x28);
+    local_1bc = 0;
+    if (0 < iVar2) {
+      do {
+        piVar1 = (int *)local_190[local_1bc];
+        if (((((piVar1 != param_1) && ((*(byte *)(*piVar1 + 0x1a0) & 0x10) == 0)) &&
+             (0.0 < *(float *)(*piVar1 + 0x160))) &&
+            ((iVar3 = (**(code **)(param_1[0x111] + 0x120))(param_1,piVar1), iVar3 != 0 &&
+             (iVar3 = (**(code **)(param_1[0x111] + 0x138))(param_1,piVar1), iVar3 != 0)))) &&
+           ((-1 < *(char *)(*piVar1 + 0x1a4) &&
+            (iVar3 = (**(code **)(param_1[0x111] + 0xe0))(param_1,piVar1), iVar3 != 0)))) {
+          if ((*(byte *)(*piVar1 + 0x1a4) & 8) != 0) {
+            if ((*(byte *)(*param_1 + 0x1a0) & 1) != 0) {
+              iVar3 = (**(code **)(piVar1[0x111] + 0x50))(piVar1);
+              if ((piVar1 != (int *)0x0) &&
+                 (iVar3 = (**(code **)(*(int *)(iVar3 + 0x444) + 0x138))(iVar3,param_1), iVar3 == 0)
+                 ) goto switchD_000ba149_caseD_fffffffe;
+              *(byte *)(*param_1 + 0x1a0) = *(byte *)(*param_1 + 0x1a0) & 0xfe;
+            }
+            uVar6 = uVar6 | 0x200000;
+          }
+          piVar1[2] = param_1[2];
+          param_1[2] = (int)piVar1;
+          piVar4 = (int *)__opP11CBaseEntity__7EHANDLE(param_1 + 0x13b);
+          if (piVar1 == piVar4) {
+            uVar6 = uVar6 | 0x10;
+          }
+          uVar5 = (**(code **)(param_1[0x111] + 0x120))(param_1,piVar1);
+          switch(uVar5) {
+          default:
+            (*DAT_001c1114)(2,"%s can\'t assess %s\n",*(int *)*param_1 + *(int *)(gpGlobals + 0x98),
+                            *(int *)*piVar1 + *(int *)(gpGlobals + 0x98));
+            break;
+          case 1:
+            uVar6 = uVar6 | 8;
+            break;
+          case 2:
+            uVar6 = uVar6 | 2;
+            break;
+          case 3:
+            uVar6 = uVar6 | 0x400000;
+            break;
+          case 0xfffffffe:
+            break;
+          case 0xffffffff:
+            uVar6 = uVar6 | 4;
+          }
+        }
+switchD_000ba149_caseD_fffffffe:
+        local_1bc = local_1bc + 1;
+      } while (local_1bc < iVar2);
+    }
+  }
+  param_1[0x13a] = param_1[0x13a] | uVar6;
+  return;
+}
+
+

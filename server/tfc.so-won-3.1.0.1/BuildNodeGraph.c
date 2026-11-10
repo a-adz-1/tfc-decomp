@@ -1,0 +1,487 @@
+// BuildNodeGraph__9CTestHull  @ 000bba30
+void BuildNodeGraph__9CTestHull(int *param_1)
+
+{
+  byte *pbVar1;
+  size_t __size;
+  float fVar2;
+  undefined4 uVar3;
+  float fVar4;
+  bool bVar5;
+  void *__ptr;
+  FILE *__stream;
+  int iVar6;
+  float *pfVar7;
+  int iVar8;
+  undefined4 *puVar9;
+  undefined4 *puVar10;
+  int iVar11;
+  undefined4 *puVar12;
+  bool bVar13;
+  undefined2 in_FPUControlWord;
+  longdouble lVar14;
+  int iStack_1168;
+  int iStack_115c;
+  int iStack_1158;
+  int iStack_114c;
+  int iStack_112c;
+  int iStack_1128;
+  int iStack_1124;
+  int iStack_1110;
+  int iStack_110c;
+  float fStack_1108;
+  float fStack_1104;
+  float fStack_1100;
+  float fStack_10fc;
+  float fStack_10f8;
+  undefined4 uStack_10f4;
+  undefined4 uStack_10f0;
+  float fStack_10ec;
+  int iStack_10d8;
+  float fStack_10d0;
+  float fStack_10cc;
+  float fStack_10c8;
+  undefined4 uStack_10c4;
+  undefined4 uStack_10c0;
+  float fStack_10bc;
+  undefined4 uStack_10b8;
+  undefined4 uStack_10b4;
+  float fStack_10b0;
+  undefined4 uStack_10ac;
+  float fStack_10a8;
+  undefined4 uStack_10a4;
+  undefined4 uStack_10a0;
+  float fStack_109c;
+  undefined4 uStack_1080;
+  undefined4 uStack_1078;
+  float fStack_1074;
+  float fStack_1070;
+  float fStack_106c;
+  char local_1038 [4152];
+  
+  param_1[3] = -0x10000;
+  param_1[4] = (int)SUB_Remove__11CBaseEntity;
+  *(undefined4 *)(*param_1 + 0x104) = *gpGlobals;
+  __ptr = calloc(0x18,DAT_001a82b8 << 7);
+  if (__ptr == (void *)0x0) {
+    (*DAT_001a7f34)(2,"**Could not malloc TempPool!\n");
+  }
+  else {
+    (*DAT_001a7fcc)(local_1038);
+    strcat(local_1038,"/maps");
+    mkdir(local_1038,0x1ff);
+    strcat(local_1038,"/graphs");
+    mkdir(local_1038,0x1ff);
+    strcat(local_1038,"/");
+    strcat(local_1038,(char *)(gpGlobals[3] + gpGlobals[0x26]));
+    strcat(local_1038,".nrp");
+    __stream = fopen(local_1038,"w+");
+    if (__stream == (FILE *)0x0) {
+      (*DAT_001a7f34)(2,"Couldn\'t create %s!\n",local_1038);
+      if (__ptr != (void *)0x0) {
+        free(__ptr);
+      }
+    }
+    else {
+      fprintf(__stream,"Node Graph Report for map:  %s.bsp\n",gpGlobals[3] + gpGlobals[0x26]);
+      fprintf(__stream,"%d Total Nodes\n\n",DAT_001a82b8);
+      iStack_1124 = 0;
+      if (0 < DAT_001a82b8) {
+        iVar11 = 0;
+        do {
+          *(undefined4 *)(DAT_001a82ac + 0x20 + iVar11) = 0;
+          *(undefined4 *)(DAT_001a82ac + 0x24 + iVar11) = 0;
+          memset((void *)(DAT_001a82ac + iVar11 + 0x28),0,0x20);
+          fprintf(__stream,"Node#         %4d\n",iStack_1124);
+          uStack_1078 = CONCAT22(uStack_1078._2_2_,in_FPUControlWord);
+          uStack_1080 = CONCAT22(uStack_1078._2_2_,CONCAT11(0xc,(char)in_FPUControlWord));
+          fprintf(__stream,"Location      %4d,%4d,%4d\n",
+                  (int)ROUND(*(float *)(DAT_001a82ac + iVar11)),
+                  (int)ROUND(*(float *)(DAT_001a82ac + 4 + iVar11)),
+                  (int)ROUND(*(float *)(DAT_001a82ac + 8 + iVar11)));
+          fprintf(__stream,"HintType:     %4d\n",(int)*(short *)(DAT_001a82ac + 0x50 + iVar11));
+          fprintf(__stream,"HintActivity: %4d\n",(int)*(short *)(DAT_001a82ac + 0x52 + iVar11));
+          fprintf(__stream,"HintYaw:      %4f\n");
+          fprintf(__stream,
+                  "-------------------------------------------------------------------------------\n"
+                 );
+          iVar11 = iVar11 + 0x58;
+          iStack_1124 = iStack_1124 + 1;
+        } while (iStack_1124 < DAT_001a82b8);
+      }
+      fprintf(__stream,"\n\n");
+      iStack_1124 = 0;
+      if (0 < DAT_001a82b8) {
+        iVar11 = 0;
+        do {
+          if ((*(byte *)(DAT_001a82ac + 0x1c + iVar11) & 2) == 0) {
+            iVar6 = UTIL_PointContents__FRC6Vector(DAT_001a82ac + iVar11);
+            if (iVar6 == -3) {
+              pbVar1 = (byte *)(DAT_001a82ac + 0x1c + iVar11);
+              *pbVar1 = *pbVar1 | 4;
+            }
+            else {
+              pbVar1 = (byte *)(DAT_001a82ac + 0x1c + iVar11);
+              *pbVar1 = *pbVar1 | 1;
+              fStack_10d0 = 0.0;
+              fStack_10cc = 0.0;
+              fStack_10c8 = 384.0;
+              puVar9 = (undefined4 *)(DAT_001a82ac + iVar11);
+              uStack_10c4 = *puVar9;
+              uStack_10c0 = puVar9[1];
+              fStack_10bc = (float)puVar9[2] - 384.0;
+              UTIL_TraceLine__FRC6VectorT015IGNORE_MONSTERSP7edict_sP11TraceResult
+                        (DAT_001a82ac + iVar11,&uStack_10c4,1,g_pBodyQueueHead,&uStack_10b8);
+              uStack_10c4 = 0;
+              uStack_10c0 = 0;
+              fStack_10bc = 384.0;
+              pfVar7 = (float *)(DAT_001a82ac + iVar11);
+              fStack_10d0 = *pfVar7;
+              fStack_10cc = pfVar7[1];
+              fStack_10c8 = pfVar7[2] - 384.0;
+              UTIL_TraceLine__FRC6VectorT015IGNORE_MONSTERSP7edict_sP11TraceResult
+                        (DAT_001a82ac + iVar11,&fStack_10d0,0,g_pBodyQueueHead,&fStack_1108);
+              iVar6 = DAT_001a82ac;
+              if (((fStack_10f8 < fStack_10a8) && (iStack_10d8 != 0)) &&
+                 ((*(byte *)(iStack_10d8 + 0x227) & 2) != 0)) {
+                uStack_10a4 = uStack_10f4;
+                uStack_10a0 = uStack_10f0;
+                fStack_109c = fStack_10ec;
+              }
+              *(float *)(DAT_001a82ac + 8 + iVar11) = fStack_109c + 8.0;
+              *(float *)(iVar6 + 0x14 + iVar11) = fStack_109c + 8.0;
+            }
+          }
+          iVar11 = iVar11 + 0x58;
+          iStack_1124 = iStack_1124 + 1;
+        } while (iStack_1124 < DAT_001a82b8);
+      }
+      iStack_112c = LinkVisibleNodes__6CGraphP5CLinkP8_IO_FILEPi
+                              (&WorldGraph,__ptr,__stream,&iStack_110c);
+      if (iStack_112c == 0) {
+        (*DAT_001a7f34)(2,"**ConnectVisibleNodes FAILED!\n");
+        param_1[3] = -0x10000;
+        param_1[4] = (int)ShowBadNode__9CTestHull;
+        iVar6 = DAT_001a82ac;
+        iVar11 = *param_1;
+        iStack_110c = iStack_110c * 0x58;
+        *(undefined4 *)(iVar11 + 8) = *(undefined4 *)(DAT_001a82ac + iStack_110c);
+        *(undefined4 *)(iVar11 + 0xc) = *(undefined4 *)(iVar6 + 4 + iStack_110c);
+        *(undefined4 *)(iVar11 + 0x10) = *(undefined4 *)(iVar6 + 8 + iStack_110c);
+      }
+      else {
+        fprintf(__stream,
+                "----------------------------------------------------------------------------\n");
+        fprintf(__stream,"Walk Rejection:\n");
+        iStack_1124 = 0;
+        if (0 < DAT_001a82b8) {
+          iStack_115c = 0;
+          do {
+            puVar9 = (undefined4 *)(iStack_115c + DAT_001a82ac);
+            fprintf(__stream,
+                    "-------------------------------------------------------------------------------\n"
+                   );
+            fprintf(__stream,"Node %4d:\n\n",iStack_1124);
+            iVar11 = 0;
+            if (0 < (int)puVar9[8]) {
+              do {
+                *(undefined4 *)((int)__ptr + (puVar9[9] + iVar11) * 0x18 + 0x10) = 0xf;
+                bVar5 = false;
+                iStack_1128 = 0;
+                do {
+                  if ((!bVar5) || (1 < iStack_1128 - 1U)) {
+                    switch(iStack_1128) {
+                    case 0:
+                      fStack_1104 = 12.0;
+                      fStack_1100 = 24.0;
+                      fStack_10f8 = -12.0;
+                      iVar6 = *param_1;
+                      break;
+                    case 1:
+                      fStack_1104 = 16.0;
+                      fStack_1100 = 72.0;
+                      fStack_10f8 = -16.0;
+                      iVar6 = *param_1;
+                      break;
+                    case 2:
+                      fStack_1104 = 32.0;
+                      fStack_1100 = 64.0;
+                      fStack_10f8 = -32.0;
+                      iVar6 = *param_1;
+                      break;
+                    case 3:
+                      fStack_1104 = 32.0;
+                      fStack_1100 = 64.0;
+                      fStack_10f8 = -32.0;
+                      iVar6 = *param_1;
+                      break;
+                    default:
+                      goto LAB_000bc4b8;
+                    }
+                    uStack_10f4 = 0;
+                    fStack_1108 = fStack_1104;
+                    fStack_10fc = fStack_10f8;
+                    UTIL_SetSize__FP9entvars_sRC6VectorT1(iVar6,&fStack_10fc,&fStack_1108);
+LAB_000bc4b8:
+                    UTIL_SetOrigin__FP9entvars_sRC6Vector(*param_1,puVar9);
+                    if ((*(byte *)(*param_1 + 0x1a5) & 2) == 0) {
+                      (*DAT_001a7f34)(2,FUN_00138e5c);
+                    }
+                    if (iVar11 < 0) {
+                      (*DAT_001a7f34)(2,"**** j = %d ****\n",iVar11);
+                      if (__ptr != (void *)0x0) {
+                        free(__ptr);
+                      }
+                      goto joined_r0x000bc54d;
+                    }
+                    pfVar7 = (float *)(DAT_001a82ac +
+                                      *(int *)((int)__ptr + (puVar9[9] + iVar11) * 0x18 + 4) * 0x58)
+                    ;
+                    fStack_1074 = *pfVar7;
+                    fStack_1070 = pfVar7[1];
+                    fStack_106c = pfVar7[2];
+                    if (iStack_1128 < 3) {
+                      uVar3 = *(undefined4 *)(*param_1 + 0x1a4);
+                      bVar13 = (*(byte *)(puVar9 + 7) & 4) != 0;
+                      if (bVar13) {
+                        pbVar1 = (byte *)(*param_1 + 0x1a4);
+                        *pbVar1 = *pbVar1 | 2;
+                      }
+                      iVar6 = *param_1;
+                      fStack_1108 = *pfVar7 - *(float *)(iVar6 + 8);
+                      fStack_1104 = pfVar7[1] - *(float *)(iVar6 + 0xc);
+                      fStack_1100 = pfVar7[2] - *(float *)(iVar6 + 0x10);
+                      lVar14 = (longdouble)UTIL_VecToYaw__FRC6Vector(&fStack_1108);
+                      iVar6 = *param_1;
+                      fStack_1108 = fStack_1074 - *(float *)(iVar6 + 8);
+                      fStack_1104 = fStack_1070 - *(float *)(iVar6 + 0xc);
+                      fStack_1100 = fStack_106c - *(float *)(iVar6 + 0x10);
+                      fVar4 = SQRT(fStack_1104 * fStack_1104 + fStack_1108 * fStack_1108);
+                      iVar6 = 0;
+                      if (0.0 < fVar4) {
+                        do {
+                          fVar2 = 16.0;
+                          if (fVar4 - 1.0 <= (float)iVar6 + 16.0) {
+                            fVar2 = (fVar4 - (float)iVar6) - 1.0;
+                          }
+                          iVar8 = (*DAT_001a7eac)(*(undefined4 *)(*param_1 + 0x208),(float)lVar14,
+                                                  fVar2,!bVar13);
+                          if (iVar8 == 0) goto LAB_000bc818;
+                          iVar6 = iVar6 + 0x10;
+                          fVar2 = (float)iVar6;
+                        } while (0x3f < (byte)((fVar4 < fVar2 |
+                                                (byte)((ushort)((ushort)(NAN(fVar4) || NAN(fVar2))
+                                                               << 10) >> 8) |
+                                               (byte)((ushort)((ushort)(fVar4 == fVar2) << 0xe) >> 8
+                                                     )) - 1));
+                      }
+                      iVar8 = *param_1;
+                      fStack_1108 = *(float *)(iVar8 + 8) - fStack_1074;
+                      fStack_1104 = *(float *)(iVar8 + 0xc) - fStack_1070;
+                      fStack_1100 = *(float *)(iVar8 + 0x10) - fStack_106c;
+                      fStack_10fc = SQRT(fStack_1100 * fStack_1100 +
+                                         fStack_1104 * fStack_1104 + fStack_1108 * fStack_1108);
+                      if (64.0 < fStack_10fc) {
+LAB_000bc818:
+                        if (iStack_1128 == 1) {
+                          fprintf(__stream,"NODE_HUMAN_HULL step %f\n",iVar6);
+                          pbVar1 = (byte *)((int)__ptr + (puVar9[9] + iVar11) * 0x18 + 0x10);
+                          *pbVar1 = *pbVar1 & 0xf9;
+                          bVar5 = true;
+                        }
+                        else if (iStack_1128 < 2) {
+                          if (iStack_1128 == 0) {
+                            fprintf(__stream,"NODE_SMALL_HULL step %f\n",iVar6);
+                            pbVar1 = (byte *)((int)__ptr + (puVar9[9] + iVar11) * 0x18 + 0x10);
+                            *pbVar1 = *pbVar1 & 0xf8;
+                            bVar5 = true;
+                          }
+                        }
+                        else if (iStack_1128 == 2) {
+                          fprintf(__stream,"NODE_LARGE_HULL step %f\n",iVar6);
+                          pbVar1 = (byte *)((int)__ptr + (puVar9[9] + iVar11) * 0x18 + 0x10);
+                          *pbVar1 = *pbVar1 & 0xfb;
+                        }
+                      }
+                      *(undefined4 *)(*param_1 + 0x1a4) = uVar3;
+                    }
+                    else {
+                      uStack_10c4 = 0;
+                      uStack_10c0 = 0;
+                      fStack_10bc = 32.0;
+                      fStack_10d0 = pfVar7[3];
+                      fStack_10cc = pfVar7[4];
+                      fStack_10c8 = pfVar7[5] + 32.0;
+                      uStack_10ac = 0;
+                      fStack_10a8 = 0.0;
+                      uStack_10a4 = 0x42000000;
+                      uStack_10b8 = *puVar9;
+                      uStack_10b4 = puVar9[1];
+                      fStack_10b0 = (float)puVar9[2] + 32.0;
+                      UTIL_TraceHull__FRC6VectorT015IGNORE_MONSTERSiP7edict_sP11TraceResult
+                                (&uStack_10b8,&fStack_10d0,1,2,*(undefined4 *)(*param_1 + 0x208),
+                                 &fStack_1108);
+                      if ((fStack_1104 != 0.0) ||
+                         (0x3f < (byte)((1.0 < fStack_10f8 |
+                                         (byte)((ushort)((ushort)NAN(fStack_10f8) << 10) >> 8) |
+                                        (byte)((ushort)((ushort)(fStack_10f8 == 1.0) << 0xe) >> 8))
+                                       - 1))) {
+                        pbVar1 = (byte *)((int)__ptr + (puVar9[9] + iVar11) * 0x18 + 0x10);
+                        *pbVar1 = *pbVar1 & 0xf7;
+                      }
+                    }
+                  }
+                  iStack_1128 = iStack_1128 + 1;
+                } while (iStack_1128 < 4);
+                iVar6 = (puVar9[9] + iVar11) * 0x18;
+                if (*(int *)((int)__ptr + iVar6 + 0x10) == 0) {
+                  fprintf(__stream,"Rejected Node %3d - Unreachable by ",
+                          *(undefined4 *)((int)__ptr + iVar6 + 4));
+                  puVar10 = (undefined4 *)((int)__ptr + (puVar9[9] + puVar9[8]) * 0x18 + -0x18);
+                  puVar12 = (undefined4 *)((int)__ptr + (puVar9[9] + iVar11) * 0x18);
+                  for (iVar6 = 6; iVar6 != 0; iVar6 = iVar6 + -1) {
+                    *puVar12 = *puVar10;
+                    puVar10 = puVar10 + 1;
+                    puVar12 = puVar12 + 1;
+                  }
+                  fprintf(__stream,"Any Hull\n");
+                  puVar9[8] = puVar9[8] + -1;
+                  iStack_112c = iStack_112c + -1;
+                  iVar11 = iVar11 + -1;
+                }
+                iVar11 = iVar11 + 1;
+              } while (iVar11 < (int)puVar9[8]);
+            }
+            iStack_115c = iStack_115c + 0x58;
+            iStack_1124 = iStack_1124 + 1;
+          } while (iStack_1124 < DAT_001a82b8);
+        }
+        fprintf(__stream,
+                "-------------------------------------------------------------------------------\n\n\n"
+               );
+        iVar11 = RejectInlineLinks__6CGraphP5CLinkP8_IO_FILE(&WorldGraph,__ptr,__stream);
+        __size = iStack_112c - iVar11;
+        DAT_001a82b0 = calloc(0x18,__size);
+        if (DAT_001a82b0 != (void *)0x0) {
+          iStack_114c = 0;
+          iStack_1124 = 0;
+          DAT_001a82bc = __size;
+          if (0 < DAT_001a82b8) {
+            iStack_1158 = 0;
+            do {
+              iVar11 = *(int *)(DAT_001a82ac + 0x24 + iStack_1158);
+              *(int *)(DAT_001a82ac + 0x24 + iStack_1158) = iStack_114c;
+              iVar6 = 0;
+              if (0 < *(int *)(DAT_001a82ac + 0x20 + iStack_1158)) {
+                iStack_1168 = iStack_114c * 0x18;
+                do {
+                  puVar9 = (undefined4 *)((int)__ptr + (iVar11 + iVar6) * 0x18);
+                  puVar10 = (undefined4 *)(iStack_1168 + (int)DAT_001a82b0);
+                  for (iVar8 = 6; iVar8 != 0; iVar8 = iVar8 + -1) {
+                    *puVar10 = *puVar9;
+                    puVar9 = puVar9 + 1;
+                    puVar10 = puVar10 + 1;
+                  }
+                  iStack_1168 = iStack_1168 + 0x18;
+                  iStack_114c = iStack_114c + 1;
+                  iVar6 = iVar6 + 1;
+                } while (iVar6 < *(int *)(DAT_001a82ac + 0x20 + iStack_1158));
+              }
+              iStack_1158 = iStack_1158 + 0x58;
+              iStack_1124 = iStack_1124 + 1;
+            } while (iStack_1124 < DAT_001a82b8);
+          }
+          SortNodes__6CGraph(&WorldGraph);
+          BuildLinkLookups__6CGraph(&WorldGraph);
+          bVar5 = true;
+          fprintf(__stream,
+                  "\n\n-------------------------------------------------------------------------------\n"
+                 );
+          fprintf(__stream,"Link Pairings:\n");
+          iStack_1124 = 0;
+          if (0 < DAT_001a82b8) {
+            iVar11 = 0;
+            do {
+              iVar6 = 0;
+              if (0 < *(int *)(DAT_001a82ac + 0x20 + iVar11)) {
+                do {
+                  HashSearch__6CGraphiiRi
+                            (&WorldGraph,
+                             *(undefined4 *)
+                              ((int)DAT_001a82b0 +
+                              (*(int *)(DAT_001a82ac + iVar11 + 0x24) + iVar6) * 0x18 + 4),
+                             iStack_1124,&iStack_1110);
+                  if (iStack_1110 < 0) {
+                    bVar5 = false;
+                    fprintf(__stream,"WARNING: Node %3d does not connect back to Node %3d\n",
+                            *(undefined4 *)
+                             ((int)DAT_001a82b0 +
+                             (*(int *)(DAT_001a82ac + iVar11 + 0x24) + iVar6) * 0x18 + 4),
+                            iStack_1124);
+                  }
+                  iVar6 = iVar6 + 1;
+                } while (iVar6 < *(int *)(DAT_001a82ac + 0x20 + iVar11));
+              }
+              iVar11 = iVar11 + 0x58;
+              iStack_1124 = iStack_1124 + 1;
+            } while (iStack_1124 < DAT_001a82b8);
+          }
+          if (bVar5) {
+            fprintf(__stream,"\nAll Connections are Paired!\n");
+          }
+          fprintf(__stream,
+                  "-------------------------------------------------------------------------------\n"
+                 );
+          fprintf(__stream,
+                  "\n\n-------------------------------------------------------------------------------\n"
+                 );
+          fprintf(__stream,"Total Number of Connections in Pool: %d\n",__size);
+          fprintf(__stream,
+                  "-------------------------------------------------------------------------------\n"
+                 );
+          fprintf(__stream,"Connection Pool: %d bytes\n",__size * 0x18);
+          fprintf(__stream,
+                  "-------------------------------------------------------------------------------\n"
+                 );
+          (*DAT_001a7f34)(2,"%d Nodes, %d Connections\n",DAT_001a82b8,__size);
+          BuildRegionTables__6CGraph(&WorldGraph);
+          iStack_1124 = 0;
+          if (0 < DAT_001a82b8) {
+            iVar11 = 0;
+            do {
+              if ((*(byte *)(DAT_001a82ac + 0x1c + iVar11) & 1) != 0) {
+                *(float *)(DAT_001a82ac + 8 + iVar11) = *(float *)(DAT_001a82ac + 8 + iVar11) - 8.0;
+              }
+              iVar11 = iVar11 + 0x58;
+              iStack_1124 = iStack_1124 + 1;
+            } while (iStack_1124 < DAT_001a82b8);
+          }
+          if (__ptr != (void *)0x0) {
+            free(__ptr);
+          }
+          if (__stream != (FILE *)0x0) {
+            fclose(__stream);
+          }
+          WorldGraph = 1;
+          DAT_001a82a4 = 1;
+          uRam001a82a8 = 0;
+          ComputeStaticRoutingTables__6CGraph(&WorldGraph);
+          FSaveGraph__6CGraphPc(&WorldGraph,gpGlobals[3] + gpGlobals[0x26]);
+          (*DAT_001a7f34)(1,"Done.\n");
+          return;
+        }
+        (*DAT_001a7f34)(2,"Couldn\'t malloc LinkPool!\n");
+      }
+      if (__ptr != (void *)0x0) {
+        free(__ptr);
+      }
+joined_r0x000bc54d:
+      if (__stream != (FILE *)0x0) {
+        fclose(__stream);
+      }
+    }
+  }
+  return;
+}
+
+

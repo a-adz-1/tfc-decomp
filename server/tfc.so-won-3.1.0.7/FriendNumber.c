@@ -1,0 +1,8 @@
+// FriendNumber__12CTalkMonsteri  @ 000f6e78
+undefined4 FriendNumber__12CTalkMonsteri(undefined4 param_1,undefined4 param_2)
+
+{
+  return param_2;
+}
+
+
